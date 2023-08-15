@@ -5,6 +5,6 @@ The ethscriptions.com API does not require a key, however it is rate limited. If
 There is a goerli API and a mainnet API. The base URIs are:
 
 * `https://goerli-api.ethscriptions.com/api`
-* `https://mainnet-api.ethscriptions.com/api`
+* `https://api.ethscriptions.com/api`
 
 Use the base URIs along with the paths in the endpoints sections to access the API.
