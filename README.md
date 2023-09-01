@@ -6,7 +6,7 @@ description: >-
 
 # Introducing Ethscriptions
 
-### NEW: <mark style="background-color:green;">The first Ethscriptions VM implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://ethscriptions.gitbook.io/ethscriptions-docs/v/ethscriptions-vm/)
+### NEW: <mark style="background-color:green;">The first Ethscriptions Virtual Machine implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://ethscriptions.gitbook.io/ethscriptions-docs/v/ethscriptions-vm/)
 
 ## Overview
 
