@@ -6,13 +6,30 @@ description: >-
 
 # Introducing Ethscriptions
 
-### NEW: <mark style="background-color:green;">The first Ethscriptions Virtual Machine implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://ethscriptions.gitbook.io/ethscriptions-docs/v/ethscriptions-vm/)
+### NEW: <mark style="background-color:green;">The first Ethscriptions Virtual Machine implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://docs.ethscriptions.com/v/ethscriptions-vm)
 
 ## Overview
 
-Ethscriptions are like NFTs but 40x cheaper. Ethscriptions are cheaper because they store data on-chain using Ethereum transaction calldata, not smart contracts.
+Ethscriptions are an alternative to smart contracts—which are prohibitively expensive for most users—and to L2s, which today are centralized.
+
+Ethscriptions is a protocol that allows users to share information and perform computations on Ethereum L1 at a drastically lower cost.
+
+Ethscriptions achieves this by bypassing smart contract storage and execution and instead calculating state by applying deterministic protocol rules to "dumb" Ethereum calldata.
+
+The goal of Ethscriptions is to give ordinary users the ability to perform decentralized computations for a reasonable price.
+
+Today, Ethscriptions primarily function as cheaper NFTs. After the launch of [the Ethscriptions Virtual Machine](https://docs.ethscriptions.com/v/ethscriptions-vm), they will function as a cheaper alternative to the Ethereum Virtual Machine.
+
+### Links
+
+* [Ethscriptions Protocol GitHub](https://github.com/ethscriptions-protocol/)
+* [Ethscriptions.com](api-docs/ethscriptions-endpoints.md)
+* [Ethscription VM Goerli Testing Site](https://goerli.ethscriptionsvm.com)
+* [Ethscriptions VM Docs](https://docs.ethscriptions.com/v/ethscriptions-vm)
 
 ### What is Calldata?
+
+Ethscriptions are cheaper because they store data on-chain using Ethereum transaction calldata, not smart contracts.
 
 When you send someone eth via an Ethereum transaction, calldata is the "notes field." Sometimes people write things in the notes field, but typically when you send eth to a person you leave it blank. When you interact with a smart contract, however, you add the information you're passing to the smart contract—the function name and parameters—to the calldata field.
 
