@@ -6,6 +6,8 @@ description: >-
 
 # Introducing Ethscriptions
 
+### NEW: <mark style="background-color:green;">The first Ethscriptions VM implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://ethscriptions.gitbook.io/ethscriptions-docs/v/ethscriptions-vm/)
+
 ## Overview
 
 Ethscriptions are like NFTs but 40x cheaper. Ethscriptions are cheaper because they store data on-chain using Ethereum transaction calldata, not smart contracts.
