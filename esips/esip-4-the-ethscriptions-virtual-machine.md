@@ -4,7 +4,14 @@ description: 'Dumb Contracts: "So dumb, they''re smart"'
 
 # ESIP-4: The Ethscriptions Virtual Machine
 
-<mark style="background-color:orange;">This ESIP is a Draft!</mark> [<mark style="background-color:orange;">Discuss it in this GitHub Issue</mark>](https://github.com/ethscriptions-protocol/ESIPs/issues/7)<mark style="background-color:orange;">. You can also try the demo at</mark> [<mark style="background-color:orange;">https://goerli.ethscriptions.com</mark>](https://goerli.ethscriptions.com/contracts)<mark style="background-color:orange;">.</mark>
+### <mark style="background-color:orange;">This ESIP is a Draft!</mark>
+
+* [Discuss it in this GitHub Issue](https://github.com/ethscriptions-protocol/ESIPs/issues/7).
+* Try the demo at [https://goerli.ethscriptions.com](https://goerli.ethscriptions.com)
+* Clone the server and client!
+  * [https://github.com/ethscriptions-protocol/ethscriptions-vm-server](https://github.com/ethscriptions-protocol/ethscriptions-vm-server)
+  * [https://github.com/ethscriptions-protocol/ethscriptions-vm-client](https://github.com/ethscriptions-protocol/ethscriptions-vm-client)
+  * Read their docs: [https://docs.ethscriptions.com/v/ethscriptions-vm](https://docs.ethscriptions.com/v/ethscriptions-vm)
 
 ## Abstract
 
@@ -57,8 +64,8 @@ data:application/vnd.esc.contract.call+json,{
 }
 ```
 
-* "contractId" refers to the called contract's id, which is the transaction hash of the ethscription that deployed the Dumb Contract.
-* "functionName" and "args" are instructions for which Dumb Contract function to call and with what arguments.
+* `contractId` refers to the called contract's id, which is the transaction hash of the ethscription that deployed the Dumb Contract.
+* `functionName` and `args` are instructions for which Dumb Contract function to call and with what arguments.
 
 These "calls" are _write_ operations and, because they are initiated via Ethereum transaction, the result of the call is not available synchronously.
 
@@ -133,57 +140,55 @@ In developing the Dumb Contracts protocol we built out an approach to executing 
 
 Here is how the `SimpleToken` Dumb Contract might be implemented in Rubidity:
 
-```ruby
-class Contracts::SimpleToken < Contract
-  event :transfer, { from: :address, to: :address, value: :uint256 }
+```solidity
+class Contracts::SimpleToken < ContractImplementation
+  event :Transfer, { from: :addressOrDumbContract, to: :addressOrDumbContract, amount: :uint256 }
   
   string :public, :name
   string :public, :symbol
   
-  uint256 :immutable, :public, :maxSupply
-  uint256 :immutable, :public, :perMintLimit
+  uint256 :public, :maxSupply
+  uint256 :public, :perMintLimit
   
   uint256 :public, :totalSupply
   
-  mapping { address: :uint256 }, :public, :balanceOf
+  mapping ({ addressOrDumbContract: :uint256 }), :public, :balanceOf
   
-  constructor (
-      _name: :string,
-      _symbol: :string,
-      _maxSupply: :uint256,
-      _perMintLimit: :uint256
-  ) do |a|
-    s.name = a._name
-    s.symbol = a._symbol
-    s.maxSupply = a._maxSupply
-    s.perMintLimit = a._perMintLimit
-  end
+  constructor(
+    name: :string,
+    symbol: :string,
+    maxSupply: :uint256,
+    perMintLimit: :uint256,
+  ) {
+    s.name = name
+    s.symbol = symbol
+    s.maxSupply = maxSupply
+    s.perMintLimit = perMintLimit
+  }
   
-  function :mint, { amount: :uint256 }, :public do |a|
-    address = msg.sender
-
-    require(a.amount > 0, 'Amount must be positive')
-    require(a.amount <= s.perMintLimit, 'Exceeded mint limit')
-    require(s.totalSupply + a.amount <= s.maxSupply, 'Exceeded max supply')
-
-    s.totalSupply += a.amount
-    s.balanceOf[address] += a.amount
-
-    emit :transfer, from: address(0), to: address, value: a.amount
+  function :mint, { amount: :uint256 }, :public do
+    require(amount > 0, 'Amount must be positive')
+    require(amount <= s.perMintLimit, 'Exceeded mint limit')
+    
+    require(s.totalSupply + amount <= s.maxSupply, 'Exceeded max supply')
+    
+    s.totalSupply += amount
+    s.balanceOf[msg.sender] += amount
+    
+    emit :Transfer, from: address(0), to: msg.sender, amount: amount
   end
 
-  function :transfer, { to: :address, amount: :uint256 }, :public do |a|
-    from = msg.sender
+  function :transfer, { to: :addressOrDumbContract, amount: :uint256 }, :public do
+    require(s.balanceOf[msg.sender] >= amount, 'Insufficient balance')
     
-    require(s.balances[from] >= a.amount, 'Insufficient balance')
-    
-    s.balances[from] -= a.amount
-    s.balances[to] += a.amount
+    s.balanceOf[msg.sender] -= amount
+    s.balanceOf[to] += amount
 
-    emit :transfer, from: from, to: a.address, value: a.amount
+    emit :Transfer, from: msg.sender, to: to, amount: amount
+    
+    return true
   end
 end
-
 ```
 
 Rubidity Dumb Contracts are then executed by a "Contract Controller" that manages state, nested calls, receipt generation and so forth. The goal of the system, which we will soon open source, is to simulate the EVM environment so Contract developers can write Dumb Contracts  with their existing knowledge.
