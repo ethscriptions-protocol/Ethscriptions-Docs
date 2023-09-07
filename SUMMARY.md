@@ -16,6 +16,7 @@
 * [ESIP-3: Smart Contract Ethscription Creations](esips/esip-3-smart-contract-ethscription-creations.md)
 * [ESIP-4: The Ethscriptions Virtual Machine](esips/esip-4-the-ethscriptions-virtual-machine.md)
 * [ESIP-5: Bulk Ethscription Transfers from EOAs](esips/esip-5-bulk-ethscription-transfers-from-eoas.md)
+* [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
 
 ## ⚙ API Docs
 
