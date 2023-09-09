@@ -35,19 +35,17 @@ Anyone can issue a "deploy" command by creating a new ethscription with `0x00000
 data:application/vnd.esc.contract.deploy+json,{
   "protocol": "SimpleToken",
   "constructorArgs": {
-    "_name": "My Fun Token",
-    "_symbol": "FUN",
-    "_maxSupply": "21000000",
-    "_perMintLimit": "1000"
-  },
-  "salt": "7125bdbb5a283467e9f69e2bae0eaf8b"
+    "name": "My Fun Token",
+    "symbol": "FUN",
+    "maxSupply": "21000000",
+    "perMintLimit": "1000"
+  }
 }
 ```
 
 This ethscription represents the deployment of a Dumb Contract with the provided constructor arguments. The created contract's id is the ethscription's id (i.e., the transaction hash of the deployment transaction).
 
-* The "protocol" field contains the protocol name in traditional Smart Contract camel case. Each named protocol will be specified in an ESIP. Protocols are defined (but not necessarily executed) with Solidity code, as we will see.
-* "salt" is optional and used purely to avoid duplicate ethscription content. It is ignored by the Dumb Contracts protocol.
+The "protocol" field contains the protocol name in traditional Smart Contract camel case. Each named protocol will be specified in an ESIP. Protocols are defined (but not necessarily executed) with Solidity code, as we will see.
 
 #### Call
 
@@ -59,8 +57,7 @@ data:application/vnd.esc.contract.call+json,{
   "functionName": "mint",
   "args": {
     "amount": 1000
-  },
-  "salt": "5793369f8469f023d9f3136762d48341"
+  }
 }
 ```
 
