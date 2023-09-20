@@ -8,11 +8,17 @@ description: An overview of the protocol
 
 ### Creating Ethscriptions
 
+#### From an EOA
+
 Any successful Ethereum transaction whose input data (when interpreted as UTF-8, see algorithm below for doing this) is a valid data URI (see spec below) and who has a "to" (i.e., is not a contract creation) creates an Ethscription, provided the data URI is unique.
 
 For the URI to be unique, no Ethscription from a previous block or a transaction earlier in the block can have a dataURI with the same sha256. The sha is taken of the UTF-8 version of the dataURI.
 
 The transaction hash of the transaction in which an ethscription was created is that ethscription's id. The recipient of the creation transaction is the Ethscription’s initial owner. The sender of the creation transaction is the Ethscription's creator.
+
+#### From a Smart Contract
+
+See details in [ESIP-3](https://docs.ethscriptions.com/esips/accepted-esips/esip-3-smart-contract-ethscription-creations).
 
 ### Transferring Ethscriptions
 

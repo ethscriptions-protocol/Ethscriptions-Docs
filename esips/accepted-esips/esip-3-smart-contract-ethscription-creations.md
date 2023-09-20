@@ -1,7 +1,5 @@
 # ESIP-3: Smart Contract Ethscription Creations
 
-<mark style="background-color:orange;">This ESIP is a Draft!</mark> [<mark style="background-color:orange;">Discuss it in this GitHub Issue</mark>](https://github.com/ethscriptions-protocol/ESIPs/issues/6)<mark style="background-color:orange;">.</mark>
-
 ## Abstract
 
 ESIP-3 introduces a mechanism for smart contracts to create ethscriptions using Ethereum events.
