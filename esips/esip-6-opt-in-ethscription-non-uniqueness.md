@@ -1,7 +1,5 @@
 # ESIP-6: Opt-in Ethscription Non-uniqueness
 
-<mark style="background-color:orange;">This ESIP is a Draft!</mark> [<mark style="background-color:orange;">Discuss it in this GitHub Issue</mark>](https://github.com/ethscriptions-protocol/ESIP-Discussion/issues/10)<mark style="background-color:orange;">.</mark>
-
 ## Abstract
 
 Currently, only the first ethscription with a given content uri is valid.

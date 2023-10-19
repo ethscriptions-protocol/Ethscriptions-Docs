@@ -1,7 +1,5 @@
 # ESIP-5: Bulk Ethscription Transfers from EOAs
 
-<mark style="background-color:orange;">This ESIP is a Draft!</mark> [<mark style="background-color:orange;">Discuss it in this GitHub Issue</mark>](https://github.com/ethscriptions-protocol/ESIPs/issues/9)<mark style="background-color:orange;">.</mark>
-
 ## Abstract
 
 Bulk transferring means transferring more than one ethscription in a single Ethereum transaction.
