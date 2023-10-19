@@ -45,7 +45,7 @@ Now we split the hex string into two chunks of 64 characters and determine wheth
 1. `0x8ad5dc6c7a6133eb1c42b2a1443125b57913c9d63376825e310e4d1222a91e24` is [Ethscription #2](https://ethscriptions.com/ethscriptions/0x8ad5dc6c7a6133eb1c42b2a1443125b57913c9d63376825e310e4d1222a91e24).
 2. `0x533c5e38d1b8bf75166bd6443a443cd25bd36c087e1a5b8b0881b388fa1a942c` is [Ethscription #1](https://ethscriptions.com/ethscriptions/0x533c5e38d1b8bf75166bd6443a443cd25bd36c087e1a5b8b0881b388fa1a942c).
 
-Because both ids correspond to valid ethscriptions, we proceed. If one or more weren't valid ethscriptions, we would stop processing at this point.
+Because both ids correspond to valid ethscriptions, we proceed. If one or more weren't valid ethscriptions, we would ignore the invalid ethscriptions and continue processing.
 
 Now we look at the ids in the order they were listed in calldata, and register in order:
 
