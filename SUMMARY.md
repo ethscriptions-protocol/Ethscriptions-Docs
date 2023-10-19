@@ -17,6 +17,7 @@
   * [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
 * [Draft ESIPs](esips/draft-esips.md)
 * [ESIP-4: The Ethscriptions Virtual Machine](esips/esip-4-the-ethscriptions-virtual-machine.md)
+* [ESIP-7: Input Data Parity Between Smart Contracts and EOAs](esips/esip-7-input-data-parity-between-smart-contracts-and-eoas.md)
 
 ## ⚙ API Docs
 
