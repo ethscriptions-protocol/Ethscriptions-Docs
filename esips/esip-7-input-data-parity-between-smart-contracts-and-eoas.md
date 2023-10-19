@@ -1,5 +1,7 @@
 # ESIP-7: Input Data Parity Between Smart Contracts and EOAs
 
+### [This ESIP is a draft! Discuss it here.](https://github.com/ethscriptions-protocol/ESIP-Discussion/issues/11)
+
 ## Abstract
 
 Currently smart contracts create and transfer Ethscriptions using events. At the time we considered using input data on internal transactions instead but decided to go with events because events are cheaper and event data is more easily accessible than input data on internal transactions.
