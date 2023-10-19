@@ -30,17 +30,17 @@ In a dataURI, parameters are strings that appear after the mimetype and before t
 
 In this dataURI, `charset` is a parameter and it has the value `utf-8`.
 
-We will discuss the choice of magic parameter below, but for now let's assume it is `esip6=true`.
+We will discuss the choice of magic parameter below, but for now let's assume it is `rule=esip6`.
 
-If a user wants to mark an ethscription "okay to duplicate" they would add the parameter `esip6=true` to their dataURI. For example:
+If a user wants to mark an ethscription "okay to duplicate" they would add the parameter `rule=esip6` to their dataURI. For example:
 
-`data:text/plain;charset=utf-8;esip6=true,hi`
+`data:text/plain;charset=utf-8;rule=esip6,hi`
 
 If there were no other parameter, it would look like this:
 
-`data:text/plain;esip6=true,hi`
+`data:text/plain;rule=esip6,hi`
 
-Marking an ethscription "okay to duplicate" also guarantees that it will never be invalidated as a duplicate itself because any potential duplicate would also contain the parameter `esip6=true` which marks _it_ as "okay to duplicate."
+Marking an ethscription "okay to duplicate" also guarantees that it will never be invalidated as a duplicate itself because any potential duplicate would also contain the parameter `rule=esip6` which marks _it_ as "okay to duplicate."
 
 #### Updated Indexer Behavior
 
@@ -49,7 +49,7 @@ To implement this ESIP, indexers must change their behavior. Here is how an inde
 1. Determine whether the ethscription's content is a valid dataURI. The rules for dataURI validity are **not** changing in this ESIP. Everything that was a valid dataURI previously is still valid, and everything that wasn't a valid dataURI is still invalid.
    1. If the ethscription has an invalid dataURI then it is an invalid ethscription. If it has a valid dataURI, proceed to step 2.\
 
-2. Does the ethscription contain `esip6=true` as a dataURI parameter?
+2. Does the ethscription contain `rule=esip6` as a dataURI parameter?
    1. If yes, the ethscription is valid. If no, proceed to step 3.\
 
 3. Does another ethscription created in an earlier block, or created in the same block but with an earlier transaction index, have the same content?
@@ -77,37 +77,19 @@ Here is example code you can use to find the correct parameter using this regex:
 ```ruby
 def is_esip6?(uri)
   match = REGEXP.match(uri)
-  String(match[:parameters]).split(';').include?('esip6=true')
+  String(match[:parameters]).split(';').include?('rule=esip6')
 end
 ```
 
 #### Client Behavior
 
-Ethscriptions clients are encouraged to indicate the presence of the `esip6=true` parameter as well as the number of duplicates that exist for a specific `esip6=true` ethscription.
+Ethscriptions clients are encouraged to indicate the presence of the `rule=esip6` parameter as well as the number of duplicates that exist for a specific `rule=esip6` ethscription.
 
-Many clients display "Ethscription Numbers" that indicate the order in which a given ethscription was created. Clients are encouraged to continue assigning numbers to all valid ethscriptions, whether or not they include the `esip6=true` parameter.
+Many clients display "Ethscription Numbers" that indicate the order in which a given ethscription was created. Clients are encouraged to continue assigning numbers to all valid ethscriptions, whether or not they include the `rule=esip6` parameter.
 
 #### Smart Contract Behavior
 
-Because Smart Contracts cannot "try again" in the case of duplicates, Smart Contracts should include the `esip6=true` parameter in any scenario in which ethscription creation failure would lead to loss of funds or ethscriptions.
-
-#### Choice of "Magic" Parameter
-
-We've been using "esip6=true" as a stand-in for the magic parameter and ideally we would change it to something more suggestive of its function.
-
-However it is _essential_ that we change it to something unique as this entire proposal only works if the Magic Parameter has never been used before.
-
-If the magic parameter _has_ been used before in Ethscription X, then either:
-
-1. Ethscription X becomes duplicatable when ESIP-6 is live. This is unacceptable because this breaks backwards compatibility.\
-
-2. Ethscription X remains non-duplicatable. This too is unacceptable because it breaks guaranteed delivery of future messages.
-
-Because of this, we cannot specify the parameter ahead of time or we risk someone using it and invalidating the proposal.
-
-To address this, we propose taking the unconventional step of using Middlemarch and Hirsch as an "oracle" that will provide a unique parameter at the moment of launch. This will be coordinated ahead of time so that indexers who have implemented this ESIP can swap in the correct parameter as quickly as possible.
-
-Another option here is to base the parameter on a piece of information that cannot be known ahead of time. For example, we could say that the parameter is the last few characters of the block hash of the block immediately before this ESIP goes live. However this approach creates the same last-minute scramble and also means we're stuck with an incomprehensible parameter name forever. Also the block in question could have its hash change in a reorg.
+Because Smart Contracts cannot "try again" in the case of duplicates, Smart Contracts should include the `rule=esip6` parameter in any scenario in which ethscription creation failure would lead to loss of funds or ethscriptions.
 
 ## Rationale
 
