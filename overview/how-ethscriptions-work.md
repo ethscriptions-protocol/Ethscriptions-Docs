@@ -10,7 +10,7 @@ description: An overview of the protocol
 
 #### From an EOA
 
-Any successful Ethereum transaction whose input data (when interpreted as UTF-8, see algorithm below for doing this) is a valid data URI (see spec below) and who has a "to" (i.e., is not a contract creation) creates an Ethscription, provided the data URI is unique.
+Any successful Ethereum transaction whose input data (when interpreted as UTF-8, see algorithm below for doing this) is a valid data URI (see spec below) and who has a "to" (i.e., is not a contract creation) creates an Ethscription, provided the data URI is unique _or_ the data uri has the parameter `rule=esip6`. [Read more](https://docs.ethscriptions.com/esips/accepted-esips/esip-6-opt-in-ethscription-non-uniqueness).
 
 For the URI to be unique, no Ethscription from a previous block or a transaction earlier in the block can have a dataURI with the same sha256. The sha is taken of the UTF-8 version of the dataURI.
 
