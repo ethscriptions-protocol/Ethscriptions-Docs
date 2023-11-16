@@ -38,9 +38,9 @@ The creation of a new ethscription counts as a valid transfer from the "from" on
 
 Any Ethereum transaction whose input data is an ethscription id as defined above is a valid Ethscription transfer, provided the transaction sender is the Ethscription’s owner. Because internal transactions from smart contracts do not have input data, this method only works for EOAs.
 
-#### Transferring From EOAs, Under ESIP-5
+#### Transferring From EOAs (Under ESIP-5)
 
-If the input data of a transaction (without its leading `0x`) is a sequence of 1 or more valid ethscription ids (without their leading `0x`), that transaction will constitute a valid transfer for each ethscription that is owned by the transaction's creator. [Read more](https://docs.ethscriptions.com/esips/accepted-esips/esip-5-bulk-ethscription-transfers-from-eoas).
+If the input data of a transaction (without its leading `0x`) is a sequence of 1 or more valid ethscription ids (without their leading `0x`), that transaction will constitute a valid transfer for each ethscription that is owned by the transaction's creator. The transaction must have occurred in `18330000` or a later block. [Read more](https://docs.ethscriptions.com/esips/accepted-esips/esip-5-bulk-ethscription-transfers-from-eoas).
 
 #### Transferring From Smart Contracts, Under ESIP-1
 
