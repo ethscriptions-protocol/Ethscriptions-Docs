@@ -48,7 +48,7 @@ If a contract emits `ethscriptions_protocol_TransferEthscription`(signature belo
 
 #### Transferring From Smart Contracts, Under ESIP-2
 
-If a contract emits `ethscriptions_protocol_TransferEthscriptionForPreviousOwner`, the protocol should register a valid ethscription transfer from the emitting contract to `recipient` of the ethscription with id `ethscriptionId`, provided:
+If a contract emits `ethscriptions_protocol_TransferEthscriptionForPreviousOwner`, the protocol should register a valid ethscription transfer from the emitting contract to `recipient` of the `ethscription` with id `ethscriptionId`, provided:
 
 1. The emitting contract owns the ethscription with id `ethscriptionId` when it emits the event.
 2. The ethscription's previous owner was `previousOwner`.
