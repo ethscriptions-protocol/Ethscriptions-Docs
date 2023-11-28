@@ -2,7 +2,13 @@
 description: 'Dumb Contracts: "So dumb, they''re smart"'
 ---
 
-# ESIP-4: The Ethscriptions Virtual Machine
+# OUT OF DATE: ESIP-4: The Ethscriptions Virtual Machine
+
+### ESIP-4 is now the Facet Protoco. Read the docs here: [https://docs.facet.org/](https://docs.facet.org/)
+
+Dumb Contracts will not be integrated into the Ethscriptions protocol, but rather into Facet, which builts on top of Ethscriptions.
+
+The Facet docs supersede everything in this document, which is left purely for historical interest.
 
 ### <mark style="background-color:orange;">This ESIP is a Draft!</mark>
 

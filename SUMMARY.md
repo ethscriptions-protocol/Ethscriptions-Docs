@@ -16,7 +16,7 @@
   * [ESIP-5: Bulk Ethscription Transfers from EOAs](esips/esip-5-bulk-ethscription-transfers-from-eoas.md)
   * [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
 * [Draft ESIPs](esips/draft-esips.md)
-* [ESIP-4: The Ethscriptions Virtual Machine](esips/esip-4-the-ethscriptions-virtual-machine.md)
+* [OUT OF DATE: ESIP-4: The Ethscriptions Virtual Machine](esips/out-of-date-esip-4-the-ethscriptions-virtual-machine.md)
 
 ## ⚙ API Docs
 
