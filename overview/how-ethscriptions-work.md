@@ -88,6 +88,10 @@ function hexToUTF8(hexString) {
 
 Any method functionally equivalent to this Ruby class will work. Note that any syntactically valid mimetype is allowed.
 
+Base64 decoding is done according to RFC 4648 and is "strict." We do not attempt to recover from any encoding issues, meaning that `encode(decode(b64_string)) == b64_string` must be true.
+
+A good test case is the string `str = "bD5="`. Lenient decoders will decode this to `l>`, but the correct encoding  of `l>` is `bD4=` and so `encode(decode(str)) != str`, which means str is not valid Base64 for our purposes.
+
 ```ruby
 class DataUri
   REGEXP = %r{
