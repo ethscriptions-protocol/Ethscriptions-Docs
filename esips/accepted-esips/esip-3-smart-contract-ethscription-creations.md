@@ -2,7 +2,7 @@
 
 ## Abstract
 
-ESIP-3 introduces a mechanism for smart contracts to create ethscriptions using Ethereum events.
+ESIP-3 introduces a mechanism for smart contracts to create ethscriptions using Ethereum events. Start block: `18130000`
 
 ## Specification
 
@@ -15,7 +15,7 @@ event ethscriptions_protocol_CreateEthscription(
 );
 ```
 
-When a contract emits this event, the protocol should register a valid ethscription creation attempt with:
+When a contract emits this event in or after block `18130000`, the protocol should register a valid ethscription creation attempt with:
 
 1. `contentURI` interpreted as the ethscription's utf-8 encoded dataURI.
 2. `initialOwner` as the created ethscription's initial owner.

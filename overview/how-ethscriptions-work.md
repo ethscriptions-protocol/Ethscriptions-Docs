@@ -18,7 +18,7 @@ The transaction hash of the transaction in which an ethscription was created is 
 
 #### From a Smart Contract
 
-See details in [ESIP-3](https://docs.ethscriptions.com/esips/accepted-esips/esip-3-smart-contract-ethscription-creations).
+See details in [ESIP-3](https://docs.ethscriptions.com/esips/accepted-esips/esip-3-smart-contract-ethscription-creations). The start block for ESIP-3 is `18130000`.
 
 ### Transferring Ethscriptions
 
