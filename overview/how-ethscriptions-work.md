@@ -2,9 +2,21 @@
 description: An overview of the protocol
 ---
 
-# How Ethscriptions Work
+# Protocol Specification
 
 ## High Level
+
+### Indexing Mechanics
+
+Ethscriptions protocol state is determined by indexing all Ethereum transactions in order, starting with transactions in the Ethscriptions "genesis block" and proceeding from there sequentially in order of block number and transaction index within the block. The genesis blocks are:
+
+<pre class="language-ruby"><code class="lang-ruby"><strong>ethscriptionsGenesisBlocks = [
+</strong><strong>    1608625, 3369985, 3981254, 5873780, 8205613,
+</strong><strong>    9046950, 9046974, 9239285, 9430552, 10548855, 10711341, 15437996, 17478950
+</strong><strong>]
+</strong></code></pre>
+
+The Ethscriptions protocol only considers successful transaction. If a transaction has `status == 0` it must be ignored—i.e., transaction status must be either `1` or `null` as in the case of transactions with `blockNumber <= 4370000`.
 
 ### Creating Ethscriptions
 

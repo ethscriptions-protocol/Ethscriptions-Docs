@@ -4,7 +4,7 @@
 
 * [Introducing Ethscriptions](README.md)
 * [Quick Start](overview/quick-start.md)
-* [Protocol Specification](overview/protocol-specification.md)
+* [Protocol Specification](overview/how-ethscriptions-work.md)
 
 ## 💡 ESIPs
 

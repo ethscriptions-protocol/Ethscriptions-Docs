@@ -19,4 +19,4 @@
 
 You can use [ethscriptions.com](https://ethscriptions.com)! However if you don’t want to rely on me you can track things yourself as all the necessary data is publicly available and uncensorable.
 
-You will need an indexer, and soon the indexer that powers this website will be open sourced. In the meantime it's possible to build your own indexer that follows [the rules of the protocol](protocol-specification.md).
+You will need an indexer, and soon the indexer that powers this website will be open sourced. In the meantime it's possible to build your own indexer that follows [the rules of the protocol](how-ethscriptions-work.md).
