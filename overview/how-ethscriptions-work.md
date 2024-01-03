@@ -107,7 +107,7 @@ A good test case is the string `str = "bD5="`. Lenient decoders will decode this
 ```ruby
 class DataUri
   REGEXP = %r{
-    data:
+    \Adata:
     (?<mediatype>
       (?<mimetype> .+? / .+? )?
       (?<parameters> (?: ; .+? = .+? )* )
