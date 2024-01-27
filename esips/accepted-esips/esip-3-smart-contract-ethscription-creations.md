@@ -17,11 +17,11 @@ event ethscriptions_protocol_CreateEthscription(
 
 When a contract emits this event in or after block `18130000`, the protocol should register a valid ethscription creation attempt with:
 
-1. `contentURI` interpreted as the ethscription's utf-8 encoded dataURI.
+1. `contentURI` interpreted as the ethscription's utf-8 encoded dataURI with all null bytes removed.
 2. `initialOwner` as the created ethscription's initial owner.
 3. The emitting contract as the creator.
 
-Functionally speaking, this event is the equivalent of an EOA hex-encoding `contentURI` and putting it in the calldata of an Ethereum transaction from itself to `initialOwner`.
+Functionally speaking, this event is the equivalent of an EOA hex-encoding `contentURI` and putting it in the calldata of an Ethereum transaction from itself to `initialOwner`. As with ethscriptions created via input data, all null bytes are removed from the UTF8 `contentURI` of ethscriptions created through events.
 
 As with EOA-initiated ethscription creations, ESIP-3 ethscription creations are only valid if `contentURI` is both unique and [a syntactically valid dataURI](https://docs.ethscriptions.com/overview/how-ethscriptions-work#how-to-validate-a-datauri).
 
