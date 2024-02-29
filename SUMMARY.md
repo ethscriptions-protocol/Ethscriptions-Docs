@@ -15,10 +15,11 @@
   * [ESIP-3: Smart Contract Ethscription Creations](esips/accepted-esips/esip-3-smart-contract-ethscription-creations.md)
   * [ESIP-5: Bulk Ethscription Transfers from EOAs](esips/esip-5-bulk-ethscription-transfers-from-eoas.md)
   * [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
+  * [ESIP-7: Support gzipped Calldata in Ethscription Creation](esips/accepted-esips/esip-7-support-gzipped-calldata-in-ethscription-creation.md)
 * [Draft ESIPs](esips/draft-esips.md)
 * [OUT OF DATE: ESIP-4: The Ethscriptions Virtual Machine](esips/out-of-date-esip-4-the-ethscriptions-virtual-machine.md)
 
-## ⚙ API Docs
+## ⚙️ API Docs
 
 * [API Overview](api-docs/api-overview.md)
 * [Ethscriptions Endpoints](api-docs/ethscriptions-endpoints.md)
