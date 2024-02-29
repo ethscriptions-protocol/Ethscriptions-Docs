@@ -58,4 +58,4 @@ UTF-8 dataURIs are a clear and intuitive transport mechanism for ethscription co
 
 However, we have matured as a protocol to the point that minimizing expense is a more dominant concern.
 
-Gzipping is a backwards compatible approach that will be completely transparent to the end user and requires only localized changes to indexers.
+Gzipping is a backwards compatible approach that will be completely transparent to the end user and requires only localized changes to indexers. Even with a "slow" language like Ruby, unzipping is extremely fast: on the order of 1ms for typical ethscription payloads.
