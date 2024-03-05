@@ -2,22 +2,17 @@
 description: 'Dumb Contracts: "So dumb, they''re smart"'
 ---
 
-# OUT OF DATE: ESIP-4: The Ethscriptions Virtual Machine
+# DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine
 
-### ESIP-4 is now the Facet Protoco. Read the docs here: [https://docs.facet.org/](https://docs.facet.org/)
+### ESIP-4 is now the Facet Protocol. Read the docs here: [https://docs.facet.org/](https://docs.facet.org/)
 
 Dumb Contracts will not be integrated into the Ethscriptions protocol, but rather into Facet, which builts on top of Ethscriptions.
 
 The Facet docs supersede everything in this document, which is left purely for historical interest.
 
-### <mark style="background-color:orange;">This ESIP is a Draft!</mark>
 
-* [Discuss it in this GitHub Issue](https://github.com/ethscriptions-protocol/ESIPs/issues/7).
-* Try the demo at [https://goerli.ethscriptions.com](https://goerli.ethscriptions.com)
-* Clone the server and client!
-  * [https://github.com/ethscriptions-protocol/ethscriptions-vm-server](https://github.com/ethscriptions-protocol/ethscriptions-vm-server)
-  * [https://github.com/ethscriptions-protocol/ethscriptions-vm-client](https://github.com/ethscriptions-protocol/ethscriptions-vm-client)
-  * Read their docs: [https://docs.ethscriptions.com/v/ethscriptions-vm](https://docs.ethscriptions.com/v/ethscriptions-vm)
+
+###
 
 ## Abstract
 
