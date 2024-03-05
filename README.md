@@ -6,26 +6,18 @@ description: >-
 
 # Introducing Ethscriptions
 
-### NEW: <mark style="background-color:green;">The first Ethscriptions Virtual Machine implementation is now Open Source!</mark> [<mark style="background-color:green;">Read the docs</mark>](https://docs.ethscriptions.com/v/ethscriptions-vm)
-
 ## Overview
 
 Ethscriptions are an alternative to smart contracts—which are prohibitively expensive for most users—and to L2s, which today are centralized.
 
 Ethscriptions is a protocol that allows users to share information and perform computations on Ethereum L1 at a drastically lower cost.
 
-Ethscriptions achieves this by bypassing smart contract storage and execution and instead calculating state by applying deterministic protocol rules to "dumb" Ethereum calldata.
-
-The goal of Ethscriptions is to give ordinary users the ability to perform decentralized computations for a reasonable price.
-
-Today, Ethscriptions primarily function as cheaper NFTs. After the launch of [the Ethscriptions Virtual Machine](https://docs.ethscriptions.com/v/ethscriptions-vm), they will function as a cheaper alternative to the Ethereum Virtual Machine.
+Today, Ethscriptions primarily function as cheaper NFTs and cheaper tokens. For a more general Ethscriptions-based computation solution, try [Facet](https://docs.facet.org/).
 
 ### Links
 
 * [Ethscriptions Protocol GitHub](https://github.com/ethscriptions-protocol/)
 * [Ethscriptions.com](api-docs/ethscriptions-endpoints.md)
-* [Ethscription VM Goerli Testing Site](https://goerli.ethscriptionsvm.com)
-* [Ethscriptions VM Docs](https://docs.ethscriptions.com/v/ethscriptions-vm)
 
 ### What is Calldata?
 
@@ -59,7 +51,7 @@ Ethscriptions doesn't rely on off-chain indexers as the source of truth any more
 
 ### Who invented Ethscriptions?
 
-The [first ethscription](https://ethscriptions.com/ethscriptions/0) was created in 2016, but the formal protocol was developed by Tom Lehman aka [Middlemarch](https://twitter.com/dumbnamenumbers). In addition to Bitcoin inscriptions, he was inspired by the famous “proto-Ethscription” from the Poly Network hacker that you can see [in this transaction](https://etherscan.io/tx/0x0ae3d3ce3630b5162484db5f3bdfacdfba33724ffb195ea92a6056beaa169490).&#x20;
+The [first ethscription](https://ethscriptions.com/ethscriptions/0) was created in 2016, but the formal protocol was developed by Tom Lehman and Michael Hirsch. In addition to Bitcoin inscriptions, he was inspired by the famous “proto-Ethscription” from the Poly Network hacker that you can see [in this transaction](https://etherscan.io/tx/0x0ae3d3ce3630b5162484db5f3bdfacdfba33724ffb195ea92a6056beaa169490).&#x20;
 
 The author writes:
 
