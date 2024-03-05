@@ -24,7 +24,7 @@ When queried, ethscriptions should be returned in their uncompressed form so tha
 
 **Compression Ratio Limit**
 
-To avoid [zip bomb attacks](https://en.wikipedia.org/wiki/Zip\_bomb), gzipped calldata will only be valid if the compression ratio is less than or equal to 10x. For example, if the calldata is 10kb, it cannot decompress to more than 50kb, otherwise it is considered invalid.
+To avoid [zip bomb attacks](https://en.wikipedia.org/wiki/Zip\_bomb), gzipped calldata will only be valid if the compression ratio is less than or equal to 10x. For example, if the calldata is 10kb, it cannot decompress to more than 100kb, otherwise it is considered invalid.
 
 When compressed, 99% of current ethscriptions would have a compression ratio of 3.85x or less, so a 10x limit should be plenty for all realistic use-cases.
 
