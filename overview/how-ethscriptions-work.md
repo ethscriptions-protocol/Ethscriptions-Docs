@@ -28,6 +28,8 @@ For the URI to be unique, no Ethscription from a previous block or a transaction
 
 The transaction hash of the transaction in which an ethscription was created is that ethscription's id. The recipient of the creation transaction is the Ethscription’s initial owner. The sender of the creation transaction is the Ethscription's creator.
 
+DataURIs can be gzipped per ESIP-7 starting in block `19376500`. [Read more](https://docs.ethscriptions.com/esips/accepted-esips/esip-7-support-gzipped-calldata-in-ethscription-creation).
+
 #### From a Smart Contract
 
 See details in [ESIP-3](https://docs.ethscriptions.com/esips/accepted-esips/esip-3-smart-contract-ethscription-creations). The start block for ESIP-3 is `18130000`.
