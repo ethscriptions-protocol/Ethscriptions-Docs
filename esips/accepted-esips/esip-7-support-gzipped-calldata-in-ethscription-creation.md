@@ -4,7 +4,7 @@
 
 For EOAs, the cost of creating an ethscription is determined by the size of the calldata payload. Therefore, to save gas, it is crucial to make this payload as small as possible.
 
-Often this happens "for free" via the ethscribing of file formats that implement native compression, such as PNG.
+Often this happens "for free" via the ethscribing of file formats that implement native compression, such as PNG (though even here ethscribers must pay to encode as base64).
 
 However most ethscription content is JSON, a format that has no native compression. Because of this, a protocol-level compression solution has the potential to unlock massive savings.
 
