@@ -3,7 +3,7 @@
 ### Links <a href="#abstract" id="abstract"></a>
 
 * [Reference Implementation](https://github.com/0xFacet/ethscriptions-indexer/pull/60)
-* [ESIP-8 Discussion](https://github.com/ethscriptions-protocol/ESIP-Discussion/issues/16)
+* [ESIP-8 Discussion](https://github.com/ethscriptions-protocol/ESIP-Discussion/issues/17)
 
 ### Abstract <a href="#abstract" id="abstract"></a>
 
