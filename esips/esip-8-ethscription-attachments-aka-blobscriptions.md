@@ -97,7 +97,7 @@ def compute_attachment_uri
     if last_non_empty_section == "0080" + "00" * 30
       non_empty_sections.pop
     else
-      last_non_empty_section.gsub!(/80(00)+\z/, '')
+      last_non_empty_section.gsub!(/80(00)*\z/, '')
     end
     
     non_empty_sections.map do |section|
