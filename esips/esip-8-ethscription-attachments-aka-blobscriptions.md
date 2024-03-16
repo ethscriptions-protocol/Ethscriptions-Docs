@@ -23,7 +23,7 @@ The name "Ethscription Attachment" is preferred over "Ethscription Blob" (or sim
 
 All new ethscriptions have an optional new `attachment_uri` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
 
-If an ethscription's creation transaction _does_ include blobs, its blobs are concatenated and interpreted as UTF-8. If the resulting string is valid dataURI then it will be set as the `attachment_uri` for the ethscription. There is no uniqueness requirement.
+If an ethscription's creation transaction _does_ include blobs, its blobs are concatenated and interpreted as UTF-8. If the resulting string is valid dataURI then it will be set as the `attachment_uri` for the ethscription. There is no uniqueness requirement and gzipping is supported.
 
 This new field will be available in all API responses _in addition_ to the `content_uri` field. However, unlike the `content_uri` field, the protocol doesn't guarantee the `attachment_uri` field will be populated when an ethscription has an attachemnt.
 
