@@ -19,6 +19,14 @@ It does this not by allowing users to create ethscriptions through blobs, as thi
 
 The name "Ethscription Attachment" is preferred over "Ethscription Blob" (or similar) because transactions can have multiple blobs, but ethscriptions can only have one attachment (that is composed of all the blobs together).
 
+### An Example <a href="#specification" id="specification"></a>
+
+Consider the ethscription created by [this Sepolia transaction](https://sepolia.etherscan.io/tx/0x9974e00efaf403ea1acb3bf301532cf992e339506f5a5d7572d8fc99fb9f1284). The transaction's calldata contains the hex data `0x646174613a2c68656c6c6f2066726f6d20457468736372697074696f6e2063616c6c6461746121` which corresponds to the dataURI "data:,hello from Ethscription calldata!" which becomes the ethscription's content.
+
+[The transaction's blob](https://sepolia.etherscan.io/blob/0x016b807164821f35e5133694a762ba57f12dcbd06fe106265dd10ffc84890b45?bid=430235), when interpreted according to the rules described below, contains the dataURI for this image which becomes the ethscription's attachment:
+
+![](<../.gitbook/assets/Voyager\_golden\_record\_82\_feeding copy-min.png>)
+
 ### Specification <a href="#specification" id="specification"></a>
 
 All new ethscriptions have an optional new `attachment_uri` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
