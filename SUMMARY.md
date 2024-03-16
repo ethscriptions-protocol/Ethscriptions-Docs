@@ -17,6 +17,7 @@
   * [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
   * [ESIP-7: Support Gzipped Calldata in Ethscription Creation](esips/accepted-esips/esip-7-support-gzipped-calldata-in-ethscription-creation.md)
 * [Draft ESIPs](esips/draft-esips.md)
+* [ESIP-8: Ethscription Attachments aka "BlobScriptions"](esips/esip-8-ethscription-attachments-aka-blobscriptions.md)
 * [DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine](esips/deprecated-esip-4-the-ethscriptions-virtual-machine.md)
 
 ## ⚙️ API Docs
