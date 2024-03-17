@@ -108,7 +108,7 @@ def compute_attachment_uri
       last_non_empty_section.gsub!(/80(00)*\z/, '')
     end
     
-    non_empty_sections.map do |section|
+    non_empty_sections = non_empty_sections.map do |section|
       unless section.start_with?('00')
         raise "Expected the first byte to be zero"
       end
