@@ -13,31 +13,39 @@ However, on a practical level it is not clear how burdensome this limitation wil
 
 Like IPFS, blob data is completely decentralized—as long as one person has blob data it can be verified and used by anyone.
 
-This ESIP proposes a change to the Ethscriptions Protocol that will enable the Ethscriptions Community to harness the benefits of blob storage while mitigating the downsides.
+This ESIP proposes using blobs to store data within the Ethscriptions Protocol. We presuppose the ready availability of blob data and require indexers to store or find user blob data along with the other blockchain data the Ethscriptions Protocol currently uses.
 
-It does this not by allowing users to create ethscriptions through blobs, as this would jeopardize Ethscriptions-based protocols that rely on full availability, but rather by following EIP-4844's "sidecar" approach. ESIP-8 proposes a new "sidecar" `attachment_uri` field on Ethscriptions that is composed from the data in one or more blobs.
+Specifically, ESIP-8 proposes a new "sidecar" attachment field for Ethscriptions that is composed from the data in one or more blobs.
 
 The name "Ethscription Attachment" is preferred over "Ethscription Blob" (or similar) because transactions can have multiple blobs, but ethscriptions can only have one attachment (that is composed of all the blobs together).
 
 ### An Example <a href="#specification" id="specification"></a>
 
-Consider the ethscription created by [this Sepolia transaction](https://sepolia.etherscan.io/tx/0x9974e00efaf403ea1acb3bf301532cf992e339506f5a5d7572d8fc99fb9f1284). The transaction's calldata contains the hex data `0x646174613a2c68656c6c6f2066726f6d20457468736372697074696f6e2063616c6c6461746121` which corresponds to the dataURI "data:,hello from Ethscription calldata!" which becomes the ethscription's content.
+Consider the ethscription created by [this Sepolia transaction](https://sepolia.etherscan.io/tx/0x5d04d632d3affef95b0ae141f2b5b5af474ab80a24925672bdd551637990054b). The transaction's calldata contains the hex data `0x646174613a2c68656c6c6f2066726f6d20457468736372697074696f6e2063616c6c6461746121` which corresponds to the dataURI "data:,hello from Ethscription calldata!" which becomes the ethscription's content.
 
-[The transaction's blob](https://sepolia.etherscan.io/blob/0x016b807164821f35e5133694a762ba57f12dcbd06fe106265dd10ffc84890b45?bid=430235), when interpreted according to the rules described below, contains the dataURI for this image which becomes the ethscription's attachment:
+[The transaction's blobs](https://sepolia.etherscan.io/tx/0x5d04d632d3affef95b0ae141f2b5b5af474ab80a24925672bdd551637990054b#blobs), when interpreted according to the rules described below, contains the data for this image which becomes the ethscription's attachment:
 
-![](<../.gitbook/assets/Voyager\_golden\_record\_82\_feeding copy-min.png>)
+<div align="center">
+
+<figure><img src="../.gitbook/assets/starroom.gif" alt="" width="375"><figcaption></figcaption></figure>
+
+</div>
 
 ### Specification <a href="#specification" id="specification"></a>
 
-All new ethscriptions have an optional new `attachment_uri` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
+All new ethscriptions have an optional new `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
 
-If an ethscription's creation transaction _does_ include blobs, its blobs are concatenated and interpreted as UTF-8. If the resulting string is valid dataURI then it will be set as the `attachment_uri` for the ethscription. There is no uniqueness requirement and gzipping is supported.
+If an ethscription's creation transaction _does_ include blobs, its blobs are concatenated and interpreted as a [CBOR](https://cbor.io/) object with the following fields:
 
-This new field will be available in all API responses _in addition_ to the `content_uri` field. However, unlike the `content_uri` field, the protocol doesn't guarantee the `attachment_uri` field will be populated when an ethscription has an attachemnt.
+* content
+* mimetype
+* compression (optional; initially only gzip is supported, soon brotli)
 
-Instead, users will rely on mechanisms outside of the protocol to enforce this; for example by choosing an ethscriptions indexer that commits to making attachments available. Clients can also provide their own blob data and verify they generate the correct `attachment_uri`.
+If the concatenated data is a valid CBOR object and that object has the two required fields an attachment for the ethscription is created. There is no uniqueness requirement.
 
-In this way, you can think of the `attachment_uri` field as functioning like IPFS. However, because of the social factors mentioned above, the assumption is that, by default, blobs will be more broadly available than IPFS data.
+When such an attachment exists, the indexer's API must include the path for retrieving it in an `attachment_url` field in the JSON representation of an ethscription with at most a one block delay between ethscription creation and inclusion of the URL. For example, if an ethscription is created in block 15, the attachment\_url must appear no later than block 17.
+
+The attachment\_url field will be available _in addition_ to the `content_uri` field.
 
 **Getting Blob Data**
 
@@ -72,7 +80,7 @@ def transaction_blobs
 end
 ```
 
-#### Converting Blob Content to a UTF-8 dataURI
+#### Converting Blob Content to an Attachment
 
 At a high-level we use the same logic to convert blobs to UTF-8 that we use for calldata. However blobs have a few interesting quirks that make this more challenging:
 
@@ -89,46 +97,105 @@ Here Ethscriptions will follow [Viem's approach](https://github.com/wevm/viem/bl
 When a blob creator follows these rules, the Ethscriptions Protocol can convert the list of blobs to a dataURI like this:
 
 ```ruby
-def compute_attachment_uri
-  return if blobs.blank?
+class EthscriptionAttachment < ApplicationRecord
+  class InvalidInputError < StandardError; end
   
-  concatenated_hex = blobs.map do |blob|
-    hex_blob = blob["blob"].sub(/\A0x/, '')
+  has_many :ethscriptions,
+    foreign_key: :attachment_sha,
+    primary_key: :sha,
+    inverse_of: :attachment
+  
+  def self.from_cbor(cbor_encoded_data)
+    decoded_data = CBOR.decode(cbor_encoded_data)
+    validate_input!(decoded_data)
     
-    sections = hex_blob.scan(/.{64}/m)
+    content = decoded_data['content']
+    mimetype = decoded_data['mimetype']
+    is_text = content.encoding.name == 'UTF-8'
     
-    last_non_empty_section_index = sections.rindex { |section| section != '00' * 32 }
-    non_empty_sections = sections.take(last_non_empty_section_index + 1)
+    sha_input = mimetype + content
+    sha = "0x" + Digest::SHA256.hexdigest(sha_input)
     
-    last_non_empty_section = non_empty_sections.last
+    compression = decoded_data['compression'] || ('gzip' if gzip_compressed?(content))
     
-    if last_non_empty_section == "0080" + "00" * 30
-      non_empty_sections.pop
-    else
-      last_non_empty_section.gsub!(/80(00)*\z/, '')
-    end
+    new(
+      content: content,
+      is_text: is_text,
+      sha: sha,
+      mimetype: mimetype,
+      compression: compression,
+      size: content.bytesize,
+    )
+  rescue EOFError, CBOR::MalformedFormatError => e
+    raise InvalidInputError, "Failed to decode CBOR: #{e.message}"
+  rescue InvalidInputError => e
+    logger.error("#{e.message}")
+  end
+  
+  def self.from_blobs(blobs)
+    return if blobs.blank?
     
-    non_empty_sections = non_empty_sections.map do |section|
-      unless section.start_with?('00')
-        raise "Expected the first byte to be zero"
+    concatenated_hex = blobs.map do |blob|
+      hex_blob = blob["blob"].sub(/\A0x/, '')
+      
+      sections = hex_blob.scan(/.{64}/m)
+      
+      last_non_empty_section_index = sections.rindex { |section| section != '00' * 32 }
+      non_empty_sections = sections.take(last_non_empty_section_index + 1)
+      
+      last_non_empty_section = non_empty_sections.last
+      
+      if last_non_empty_section == "0080" + "00" * 30
+        non_empty_sections.pop
+      else
+        last_non_empty_section.gsub!(/80(00)*\z/, '')
       end
       
-      section.delete_prefix("00")
+      non_empty_sections = non_empty_sections.map do |section|
+        unless section.start_with?('00')
+          raise "Expected the first byte to be zero"
+        end
+        
+        section.delete_prefix("00")
+      end
+      
+      non_empty_sections.join
+    end.join
+    
+    cbor = [concatenated_hex].pack("H*")
+    
+    from_cbor(cbor)
+  end
+  
+  def create_unless_exists!
+    save!
+  rescue ActiveRecord::RecordNotUnique
+  end
+  
+  def prepared_content
+    decompressed_content = HexDataProcessor.ungzip_if_necessary(content)
+  
+    if is_text
+      HexDataProcessor.clean_utf8(decompressed_content)
+    else
+      decompressed_content
+    end
+  end
+  
+  def self.validate_input!(decoded_data)
+    if decoded_data['content'].nil? || decoded_data['mimetype'].nil?
+      raise InvalidInputError, "Missing required fields: content, mimetype"
     end
     
-    non_empty_sections.join
-  end.join
-  
-  HexDataProcessor.hex_to_utf8(concatenated_hex, support_gzip: true)
+    if decoded_data['compression'] && !['gzip', 'brotli'].include?(decoded_data['compression'])
+      raise InvalidInputError, "Invalid compression type: #{decoded_data['compression']}"
+    end
+  end
 end
 ```
 
-Where [`HexDataProcessor`](https://github.com/0xFacet/ethscriptions-indexer/blob/main/lib/hex\_data\_processor.rb) is the one we use for processing calldata. Here's [an example transaction that uses this format](https://sepolia.etherscan.io/tx/0xc6032f926842060d5556eccecd7cd5cec49cdfd3cad03a6caa7a6efe5e248b9b).
+Where [`HexDataProcessor`](https://github.com/0xFacet/ethscriptions-indexer/blob/main/lib/hex\_data\_processor.rb) is the one we use for processing calldata.
 
 ### Rationale <a href="#rationale" id="rationale"></a>
 
-It's all about the right tool for the job. When data is part of a stateful protocol, for example information about who owns an NFT, Attachments are the wrong choice because the protocol cannot function if ownership information is lost for even a short time.
-
-However, temporarily losing the _image_ of an NFT doesn't break the protocol, so NFT images could be a good choice for attachments. Of course it's preferable for NFT images (and everything we do) to be on-chain and available at all times, sometimes this is prohibitively expensive.
-
-Attachments fill an empty "sweet spot" between calldata and IPFS and will enhance the overall utility of the Ethscriptions Protocol significantly.
+We move form dataURIs to CBOR as the latter is a more efficient way to represent binary data.
