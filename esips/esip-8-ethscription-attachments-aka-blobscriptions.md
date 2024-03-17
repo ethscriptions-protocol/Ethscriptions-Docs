@@ -103,7 +103,7 @@ end
 
 #### Converting Blob Content to an Attachment
 
-At a high-level we use the same logic to convert blobs to UTF-8 that we use for calldata. However blobs have a few interesting quirks that make this more challenging:
+At a high-level we use normalize the blob data, concatenate it, and CBOR-decode it. However blobs have a few interesting quirks that make this more challenging:
 
 * Currently blobs have a minimum length of 128kb. If your data is smaller than that you'll have to pad it (probably will null bytes) to the full length.
 * Blobs are composed of "segments" of 32 bytes, none of which, when interpreted as an integer, can exceed the value of the cryptography-related "BLS modulus", which is 52435875175126190479447740508185965837690552500527637822603658699938581184513.
@@ -115,7 +115,7 @@ Here Ethscriptions will follow [Viem's approach](https://github.com/wevm/viem/bl
 * Left-pad each segment with a null byte. A `0x00` in the most significant byte ensures no segment can be larger than the BLS modulus.
 * End the content of every blob with `0x80`, which, when combined with the rule above, provides an unambiguous way to determine the length of the data in the blob.
 
-When a blob creator follows these rules, the Ethscriptions Protocol can convert the list of blobs to a dataURI like this:
+When a blob creator follows these rules, we decode the attachment using this class:
 
 ```ruby
 class EthscriptionAttachment < ApplicationRecord
