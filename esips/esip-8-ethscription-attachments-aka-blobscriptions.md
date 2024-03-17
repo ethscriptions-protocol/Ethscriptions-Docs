@@ -47,6 +47,27 @@ When such an attachment exists, the indexer's API must include the path for retr
 
 The attachment\_url field will be available _in addition_ to the `content_uri` field.
 
+#### Creating an Ethscription Attachment in Javascript
+
+You can use the `cbor` package and Viem's `toBlobs`:
+
+```typescript
+const { toBlobs } = require('viem');
+const fs = require('fs');
+const cbor = require('cbor');
+
+const imagePath = '/whatever.gif'
+const imageData = fs.readFileSync(imagePath);
+
+const dataObject = {
+  mimetype: 'image/gif',
+  content: imageData
+};
+
+const cborData = cbor.encode(dataObject);
+const blobs = toBlobs({ data: cborData });
+```
+
 **Getting Blob Data**
 
 Blob data is available on a block-level through the `blob_sidecars` API endpoint available on Ethereum Beacon nodes. If you don't want to run a node yourself, [you can use Quicknode](https://www.quicknode.com/docs/ethereum/eth-v1-beacon-blob\_sidecars-id).
