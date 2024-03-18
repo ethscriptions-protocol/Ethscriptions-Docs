@@ -39,7 +39,6 @@ If an ethscription's creation transaction _does_ include blobs, its blobs are co
 
 * content
 * mimetype
-* compression (optional; initially only gzip is supported, soon brotli)
 
 If the concatenated data is a valid CBOR object and that object has the two required fields an attachment for the ethscription is created. There is no uniqueness requirement.
 
@@ -115,7 +114,9 @@ Here Ethscriptions will follow [Viem's approach](https://github.com/wevm/viem/bl
 * Left-pad each segment with a null byte. A `0x00` in the most significant byte ensures no segment can be larger than the BLS modulus.
 * End the content of every blob with `0x80`, which, when combined with the rule above, provides an unambiguous way to determine the length of the data in the blob.
 
-When a blob creator follows these rules, we decode the attachment using this class:
+When a blob creator follows these rules, we decode the attachment using this class.
+
+[`HexDataProcessor`](https://github.com/0xFacet/ethscriptions-indexer/blob/main/lib/hex\_data\_processor.rb) is the same class one we use for processing calldata. Here we use CBOR instead of DataURIs because CBOR is a more efficient way of representing binary data.
 
 ```ruby
 class EthscriptionAttachment < ApplicationRecord
@@ -131,21 +132,29 @@ class EthscriptionAttachment < ApplicationRecord
     validate_input!(decoded_data)
     
     content = decoded_data['content']
+    decompressed_content = HexDataProcessor.ungzip_if_necessary(
+      content,
+      ratio_limit: 15
+    )
+    if decompressed_content.nil?
+      raise InvalidInputError, "Failed to decompress content"
+    end
+    
     mimetype = decoded_data['mimetype']
     is_text = content.encoding.name == 'UTF-8'
     
-    sha_input = mimetype + content
+    sha_input = {
+      mimetype: mimetype,
+      content: decompressed_content,
+    }.to_canonical_cbor
     sha = "0x" + Digest::SHA256.hexdigest(sha_input)
     
-    compression = decoded_data['compression'] || ('gzip' if gzip_compressed?(content))
-    
     new(
-      content: content,
+      content: decompressed_content,
       is_text: is_text,
       sha: sha,
       mimetype: mimetype,
-      compression: compression,
-      size: content.bytesize,
+      size: decompressed_content.bytesize,
     )
   rescue EOFError, CBOR::MalformedFormatError => e
     raise InvalidInputError, "Failed to decode CBOR: #{e.message}"
@@ -189,8 +198,7 @@ class EthscriptionAttachment < ApplicationRecord
   end
   
   def create_unless_exists!
-    save!
-  rescue ActiveRecord::RecordNotUnique
+    save! unless self.class.exists?(sha: sha)
   end
   
   def prepared_content
@@ -207,16 +215,7 @@ class EthscriptionAttachment < ApplicationRecord
     if decoded_data['content'].nil? || decoded_data['mimetype'].nil?
       raise InvalidInputError, "Missing required fields: content, mimetype"
     end
-    
-    if decoded_data['compression'] && !['gzip', 'brotli'].include?(decoded_data['compression'])
-      raise InvalidInputError, "Invalid compression type: #{decoded_data['compression']}"
-    end
   end
 end
+
 ```
-
-Where [`HexDataProcessor`](https://github.com/0xFacet/ethscriptions-indexer/blob/main/lib/hex\_data\_processor.rb) is the one we use for processing calldata.
-
-### Rationale <a href="#rationale" id="rationale"></a>
-
-We move form dataURIs to CBOR as the latter is a more efficient way to represent binary data.
