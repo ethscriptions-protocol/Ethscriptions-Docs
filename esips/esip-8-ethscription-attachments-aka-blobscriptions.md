@@ -11,11 +11,11 @@ The introduction of blobs in EIP-4844 enables anyone to store data on Ethereum f
 
 However, on a practical level it is not clear how burdensome this limitation will be. Because L2s use blobs to store transaction data there will be strong incentives to create publicly accessible archives of blob data to enhance the transparency and auditability of Layer 2s.
 
-Like IPFS, blob data is completely decentralized—as long as one person has blob data it can be verified and used by anyone.
+Also, like IPFS, blob data is completely decentralized—as long as one person has blob data it can be verified and used by anyone.
 
 This ESIP proposes using blobs to store data within the Ethscriptions Protocol. We presuppose the ready availability of blob data and require indexers to store or find user blob data along with the other blockchain data the Ethscriptions Protocol currently uses.
 
-Specifically, ESIP-8 proposes a new "sidecar" attachment field for Ethscriptions that is composed from the data in one or more blobs.
+Specifically, ESIP-8 proposes a new "sidecar" **attachment** field for Ethscriptions that is composed from the data in one or more blobs. This field is in addition to the existing **content** field.
 
 The name "Ethscription Attachment" is preferred over "Ethscription Blob" (or similar) because transactions can have multiple blobs, but ethscriptions can only have one attachment (that is composed of all the blobs together).
 
@@ -33,16 +33,19 @@ Consider the ethscription created by [this Sepolia transaction](https://sepolia.
 
 ### Specification <a href="#specification" id="specification"></a>
 
-All new ethscriptions have an optional new `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
+All new ethscriptions have an optional `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
 
-If an ethscription's creation transaction _does_ include blobs, its blobs are concatenated and interpreted as a [CBOR](https://cbor.io/) object with the following fields:
+If an ethscription's creation transaction _does_ include blobs _and_ the ethscription as created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as a [CBOR](https://cbor.io/) object with the following fields:
 
-* content
-* mimetype
+* `content`
+* `mimetype`
 
-If the concatenated data is a valid CBOR object and that object has the two required fields an attachment for the ethscription is created. There is no uniqueness requirement.
+If the concatenated data is a valid CBOR object, and that object has the two required fields, an attachment for the ethscription is created. Note:
 
-When such an attachment exists, the indexer's API must include the path for retrieving it in an `attachment_url` field in the JSON representation of an ethscription with at most a one block delay between ethscription creation and inclusion of the URL. For example, if an ethscription is created in block 15, the attachment\_url must appear no later than block 17.
+* There is no uniqueness requirement for the attachment's content and/or mimetype.
+* Attachment content, mimetype, and the container CBOR object itself can each be optionally gzipped.
+
+When such an attachment exists, the indexer's API must include the path for retrieving it in an `attachment_path` field in the JSON representation of an ethscription with at most a one block delay between ethscription creation and inclusion of the URL. For example, if an ethscription is created in block 15, the attachment\_url must appear no later than block 17.
 
 The attachment\_url field will be available _in addition_ to the `content_uri` field.
 
@@ -128,38 +131,31 @@ class EthscriptionAttachment < ApplicationRecord
     inverse_of: :attachment
   
   def self.from_cbor(cbor_encoded_data)
+    cbor_encoded_data = ungzip_if_necessary!(cbor_encoded_data)
+    
     decoded_data = CBOR.decode(cbor_encoded_data)
     validate_input!(decoded_data)
     
-    content = decoded_data['content']
-    decompressed_content = HexDataProcessor.ungzip_if_necessary(
-      content,
-      ratio_limit: 15
-    )
-    if decompressed_content.nil?
-      raise InvalidInputError, "Failed to decompress content"
-    end
+    content = ungzip_if_necessary!(decoded_data['content'])
+    mimetype = ungzip_if_necessary!(decoded_data['mimetype'])
     
-    mimetype = decoded_data['mimetype']
     is_text = content.encoding.name == 'UTF-8'
     
     sha_input = {
       mimetype: mimetype,
-      content: decompressed_content,
+      content: content,
     }.to_canonical_cbor
     sha = "0x" + Digest::SHA256.hexdigest(sha_input)
     
     new(
-      content: decompressed_content,
+      content: content,
       is_text: is_text,
       sha: sha,
       mimetype: mimetype,
-      size: decompressed_content.bytesize,
+      size: content.bytesize,
     )
   rescue EOFError, CBOR::MalformedFormatError => e
     raise InvalidInputError, "Failed to decode CBOR: #{e.message}"
-  rescue InvalidInputError => e
-    logger.error("#{e.message}")
   end
   
   def self.from_blobs(blobs)
@@ -183,7 +179,7 @@ class EthscriptionAttachment < ApplicationRecord
       
       non_empty_sections = non_empty_sections.map do |section|
         unless section.start_with?('00')
-          raise "Expected the first byte to be zero"
+          raise InvalidInputError, "Expected the first byte to be zero"
         end
         
         section.delete_prefix("00")
@@ -202,12 +198,14 @@ class EthscriptionAttachment < ApplicationRecord
   end
   
   def prepared_content
-    decompressed_content = HexDataProcessor.ungzip_if_necessary(content)
+    is_text ? HexDataProcessor.clean_utf8(content) : content
+  end
   
-    if is_text
-      HexDataProcessor.clean_utf8(decompressed_content)
-    else
-      decompressed_content
+  def self.ungzip_if_necessary!(binary)
+    HexDataProcessor.ungzip_if_necessary(binary).tap do |res|
+      if res.nil?
+        raise InvalidInputError, "Failed to decompress content"
+      end
     end
   end
   
@@ -217,5 +215,4 @@ class EthscriptionAttachment < ApplicationRecord
     end
   end
 end
-
 ```
