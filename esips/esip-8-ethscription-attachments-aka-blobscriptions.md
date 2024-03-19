@@ -35,15 +35,20 @@ Consider the ethscription created by [this Sepolia transaction](https://sepolia.
 
 All new ethscriptions have an optional `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
 
-If an ethscription's creation transaction _does_ include blobs _and_ the ethscription as created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as a [CBOR](https://cbor.io/) object with the following fields:
+If an ethscription's creation transaction _does_ include blobs _and_ the ethscription as created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as an _untagged_ [CBOR](https://cbor.io/) object that decodes into a hash with _exactly_ these keys:
 
 * `content`
 * `mimetype`
 
-If the concatenated data is a valid CBOR object, and that object has the two required fields, an attachment for the ethscription is created. Note:
+If the concatenated data is a valid CBOR object, and that object decodes into a hash with exactly those two fields, an attachment for the ethscription is created. Note:
 
 * There is no uniqueness requirement for the attachment's content and/or mimetype.
 * Attachment content, mimetype, and the container CBOR object itself can each be optionally gzipped.
+* The attachment is **not** valid if:
+  * If the CBOR object has a tag
+  * If the decoded object his not a hash
+  * If the decoded hash's keys aren't exactly `content` and `mimetype`. There cannot be extra keys.
+  * The values of `content` and `mimetype` aren't both strings (either binary or UTF-8).
 
 When such an attachment exists, the indexer's API must include the path for retrieving it in an `attachment_path` field in the JSON representation of an ethscription with at most a one block delay between ethscription creation and inclusion of the URL. For example, if an ethscription is created in block 15, the attachment\_url must appear no later than block 17.
 
