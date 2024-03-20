@@ -122,9 +122,9 @@ Here Ethscriptions will follow [Viem's approach](https://github.com/wevm/viem/bl
 * Left-pad each segment with a null byte. A `0x00` in the most significant byte ensures no segment can be larger than the BLS modulus.
 * End the content of every blob with `0x80`, which, when combined with the rule above, provides an unambiguous way to determine the length of the data in the blob.
 
-When a blob creator follows these rules, we decode the attachment using this class.
+When a blob creator follows these rules (or just use's Viem's [`toBlobs`](https://viem.sh/docs/utilities/toBlobs#toblobs)), you can decode it into bytes by using Viem's [`fromBlobs`](https://viem.sh/docs/utilities/fromBlobs#fromblobs). There is a Ruby implementation as well in the appendix.
 
-[`HexDataProcessor`](https://github.com/0xFacet/ethscriptions-indexer/blob/main/lib/hex\_data\_processor.rb) is the same class one we use for processing calldata. Here we use CBOR instead of DataURIs because CBOR is a more efficient way of representing binary data.
+Once you decode the blob you can create an attachment using something like this class.
 
 ```ruby
 class EthscriptionAttachment < ApplicationRecord
@@ -135,39 +135,142 @@ class EthscriptionAttachment < ApplicationRecord
     primary_key: :sha,
     inverse_of: :attachment
   
+  delegate :ungzip_if_necessary!, to: :class
+  attr_accessor :decoded_data
+  
+  def self.from_eth_transaction(tx)
+    blobs = tx.blobs.map{|i| i['blob']}
+    
+    cbor = BlobUtils.from_blobs(blobs: blobs)
+
+    from_cbor(cbor)
+  end
+  
   def self.from_cbor(cbor_encoded_data)
     cbor_encoded_data = ungzip_if_necessary!(cbor_encoded_data)
     
     decoded_data = CBOR.decode(cbor_encoded_data)
-    validate_input!(decoded_data)
     
-    content = ungzip_if_necessary!(decoded_data['content'])
-    contentType = ungzip_if_necessary!(decoded_data['contentType'])
-    
-    is_text = content.encoding.name == 'UTF-8'
-    
-    sha_input = {
-      contentType: contentType,
-      content: content,
-    }.to_canonical_cbor
-    sha = "0x" + Digest::SHA256.hexdigest(sha_input)
-    
-    new(
-      content: content,
-      is_text: is_text,
-      sha: sha,
-      contentType: contentType,
-      size: content.bytesize,
-    )
-  rescue EOFError, CBOR::MalformedFormatError => e
+    new(decoded_data: decoded_data)
+  rescue EOFError, *cbor_errors => e
     raise InvalidInputError, "Failed to decode CBOR: #{e.message}"
   end
   
-  def self.from_blobs(blobs)
-    return if blobs.blank?
+  def decoded_data=(new_decoded_data)
+    @decoded_data = new_decoded_data
     
+    validate_input!
+    
+    self.content = ungzip_if_necessary!(decoded_data['content'])
+    self.content_type = ungzip_if_necessary!(decoded_data['contentType'])
+    self.size = content.bytesize
+    self.sha = calculate_sha
+    
+    decoded_data
+  end
+  
+  def calculate_sha
+    combined = [
+      Digest::SHA256.hexdigest(content_type),
+      Digest::SHA256.hexdigest(content),
+    ].join
+    
+    "0x" + Digest::SHA256.hexdigest(combined)
+  end
+  
+  def self.ungzip_if_necessary!(binary)
+    HexDataProcessor.ungzip_if_necessary(binary)
+  rescue Zlib::Error, CompressionLimitExceededError => e
+    raise InvalidInputError, "Failed to decompress content: #{e.message}"
+  end
+  
+  private
+  
+  def validate_input!
+    unless decoded_data.is_a?(Hash)
+      raise InvalidInputError, "Expected data to be a hash, got #{decoded_data.class} instead."
+    end
+    
+    unless decoded_data.keys.to_set == ['content', 'contentType'].to_set
+      raise InvalidInputError, "Expected keys to be 'content' and 'contentType', got #{decoded_data.keys} instead."
+    end
+    
+    unless decoded_data.values.all?{|i| i.is_a?(String)}
+      raise InvalidInputError, "Invalid value type: #{decoded_data.values.map(&:class).join(', ')}"
+    end
+  end
+  
+  def self.cbor_errors
+    [CBOR::MalformedFormatError, CBOR::UnpackError, CBOR::StackError, CBOR::TypeError]
+  end
+end
+
+```
+
+Appendix: Ruby `BlobUtils`
+
+```ruby
+module BlobUtils
+  # Constants from Viem
+  BLOBS_PER_TRANSACTION = 2
+  BYTES_PER_FIELD_ELEMENT = 32
+  FIELD_ELEMENTS_PER_BLOB = 4096
+  BYTES_PER_BLOB = BYTES_PER_FIELD_ELEMENT * FIELD_ELEMENTS_PER_BLOB
+  MAX_BYTES_PER_TRANSACTION = BYTES_PER_BLOB * BLOBS_PER_TRANSACTION - 1 - (1 * FIELD_ELEMENTS_PER_BLOB * BLOBS_PER_TRANSACTION)
+
+  # Error Classes
+  class BlobSizeTooLargeError < StandardError; end
+  class EmptyBlobError < StandardError; end
+
+  # Adapted from Viem
+  def self.to_blobs(data:)
+    raise EmptyBlobError if data.empty?
+    raise BlobSizeTooLargeError if data.bytesize > MAX_BYTES_PER_TRANSACTION
+    
+    if data =~ /\A0x([a-f0-9]{2})+\z/i
+      data = [data].pack('H*')
+    end
+
+    blobs = []
+    position = 0
+    active = true
+
+    while active && blobs.size < BLOBS_PER_TRANSACTION
+      blob = []
+      size = 0
+
+      while size < FIELD_ELEMENTS_PER_BLOB
+        bytes = data.byteslice(position, BYTES_PER_FIELD_ELEMENT - 1)
+
+        # Push a zero byte so the field element doesn't overflow
+        blob.push(0x00)
+
+        # Push the current segment of data bytes
+        blob.concat(bytes.bytes) unless bytes.nil?
+
+        # If the current segment of data bytes is less than 31 bytes,
+        # stop processing and push a terminator byte to indicate the end of the blob
+        if bytes.nil? || bytes.bytesize < (BYTES_PER_FIELD_ELEMENT - 1)
+          blob.push(0x80)
+          active = false
+          break
+        end
+
+        size += 1
+        position += (BYTES_PER_FIELD_ELEMENT - 1)
+      end
+
+      blob.fill(0x00, blob.size...BYTES_PER_BLOB)
+      
+      blobs.push(blob.pack('C*').unpack1("H*"))
+    end
+
+    blobs
+  end
+  
+  def self.from_blobs(blobs:)
     concatenated_hex = blobs.map do |blob|
-      hex_blob = blob["blob"].sub(/\A0x/, '')
+      hex_blob = blob.sub(/\A0x/, '')
       
       sections = hex_blob.scan(/.{64}/m)
       
@@ -193,31 +296,8 @@ class EthscriptionAttachment < ApplicationRecord
       non_empty_sections.join
     end.join
     
-    cbor = [concatenated_hex].pack("H*")
-    
-    from_cbor(cbor)
-  end
-  
-  def create_unless_exists!
-    save! unless self.class.exists?(sha: sha)
-  end
-  
-  def prepared_content
-    is_text ? HexDataProcessor.clean_utf8(content) : content
-  end
-  
-  def self.ungzip_if_necessary!(binary)
-    HexDataProcessor.ungzip_if_necessary(binary).tap do |res|
-      if res.nil?
-        raise InvalidInputError, "Failed to decompress content"
-      end
-    end
-  end
-  
-  def self.validate_input!(decoded_data)
-    if decoded_data['content'].nil? || decoded_data['contentType'].nil?
-      raise InvalidInputError, "Missing required fields: content, contentType"
-    end
+    [concatenated_hex].pack("H*")
   end
 end
+
 ```
