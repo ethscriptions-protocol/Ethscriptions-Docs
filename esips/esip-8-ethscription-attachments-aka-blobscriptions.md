@@ -35,7 +35,7 @@ Consider the ethscription created by [this Sepolia transaction](https://sepolia.
 
 All new ethscriptions have an optional `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
 
-If an ethscription's creation transaction does include blobs _and_ the ethscription was created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as an untagged [CBOR](https://cbor.io/) object that decodes into a hash with _exactly_ these keys:
+If an ethscription's creation transaction does include blobs _and_ the ethscription was created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as an untagged [CBOR](https://cbor.io/) object (as defined by [RFC 8949](https://datatracker.ietf.org/doc/html/rfc8949)) that decodes into a hash with _exactly_ these keys:
 
 * `content`
 * `mimetype`
