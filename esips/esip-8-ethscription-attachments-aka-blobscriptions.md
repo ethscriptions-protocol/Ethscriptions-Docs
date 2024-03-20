@@ -38,17 +38,17 @@ All new ethscriptions have an optional `attachment` field. If an ethscription is
 If an ethscription's creation transaction does include blobs _and_ the ethscription was created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as an untagged [CBOR](https://cbor.io/) object (as defined by [RFC 8949](https://datatracker.ietf.org/doc/html/rfc8949)) that decodes into a hash with _exactly_ these keys:
 
 * `content`
-* `mimetype`
+* `contentType`
 
 If the concatenated data is a valid CBOR object, and that object decodes into a hash with exactly those two fields, an attachment for the ethscription is created. Note:
 
-* There is no uniqueness requirement for the attachment's content and/or mimetype.
-* Attachment content, mimetype, and the container CBOR object itself can each be optionally gzipped.
+* There is no uniqueness requirement for the attachment's content and/or contentType.
+* Attachment content, contentType, and the container CBOR object itself can each be optionally gzipped.
 * The attachment is **not** valid if:
   * If the CBOR object has a tag
   * If the decoded object his not a hash
-  * If the decoded hash's keys aren't exactly `content` and `mimetype`. There cannot be extra keys.
-  * The values of `content` and `mimetype` aren't both strings (either binary or UTF-8).
+  * If the decoded hash's keys aren't exactly `content` and `contentType`. There cannot be extra keys.
+  * The values of `content` and `contentType` aren't both strings (either binary or UTF-8).
 
 When such an attachment exists, the indexer's API must include the path for retrieving it in an `attachment_path` field in the JSON representation of an ethscription with at most a one block delay between ethscription creation and inclusion of the URL. For example, if an ethscription is created in block 15, the attachment\_url must appear no later than block 17.
 
@@ -67,7 +67,7 @@ const imagePath = '/whatever.gif'
 const imageData = fs.readFileSync(imagePath);
 
 const dataObject = {
-  mimetype: 'image/gif',
+  contentType: 'image/gif',
   content: imageData
 };
 
@@ -142,12 +142,12 @@ class EthscriptionAttachment < ApplicationRecord
     validate_input!(decoded_data)
     
     content = ungzip_if_necessary!(decoded_data['content'])
-    mimetype = ungzip_if_necessary!(decoded_data['mimetype'])
+    contentType = ungzip_if_necessary!(decoded_data['contentType'])
     
     is_text = content.encoding.name == 'UTF-8'
     
     sha_input = {
-      mimetype: mimetype,
+      contentType: contentType,
       content: content,
     }.to_canonical_cbor
     sha = "0x" + Digest::SHA256.hexdigest(sha_input)
@@ -156,7 +156,7 @@ class EthscriptionAttachment < ApplicationRecord
       content: content,
       is_text: is_text,
       sha: sha,
-      mimetype: mimetype,
+      contentType: contentType,
       size: content.bytesize,
     )
   rescue EOFError, CBOR::MalformedFormatError => e
@@ -215,8 +215,8 @@ class EthscriptionAttachment < ApplicationRecord
   end
   
   def self.validate_input!(decoded_data)
-    if decoded_data['content'].nil? || decoded_data['mimetype'].nil?
-      raise InvalidInputError, "Missing required fields: content, mimetype"
+    if decoded_data['content'].nil? || decoded_data['contentType'].nil?
+      raise InvalidInputError, "Missing required fields: content, contentType"
     end
   end
 end
