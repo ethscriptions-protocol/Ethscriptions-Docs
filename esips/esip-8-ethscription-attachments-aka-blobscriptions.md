@@ -207,7 +207,53 @@ end
 
 ```
 
-Appendix: Ruby `BlobUtils`
+#### Hashing Attachments
+
+It's useful to be able to generate a unique hash of an Ethscription Attachment in order for indexers to avoid storing duplicate data and for users to determine which other ethscriptions have the same attachment. This can be done in many ways, but to promote uniformity ESIP-8 defines this canonical method of hashing Ethscription Attachments:
+
+1. Compute the sha256 hash of the attachment's `contentType` and `content` fields.
+2. Remove the leading `0x` if present.
+3. Concatenate the hex string representations of the hashes with `contentType` first.
+4. Hash this concatenated string and add a `0x` prefix.
+
+Here is a Javascript implementation:
+
+```typescript
+import { sha256, stringToBytes } from 'viem';
+
+const attachment = {
+  contentType: 'text/plain',
+  content: 'hi',
+};
+
+const contentTypeHash = sha256(stringToBytes(attachment.contentType));
+const contentHash = sha256(stringToBytes(attachment.content));
+
+const combinedHash =
+  contentTypeHash.replace(/^0x/, '') + contentHash.replace(/^0x/, '');
+
+const finalHash = sha256(combinedHash as `0x${string}`);
+```
+
+And a Ruby implementation:
+
+```ruby
+require 'digest'
+
+attachment = {
+  'contentType' => 'text/plain',
+  'content' => 'hi',
+}
+
+content_type_hash = Digest::SHA256.hexdigest(attachment['contentType'])
+content_hash = Digest::SHA256.hexdigest(attachment['content'])
+
+combined_hash = content_type_hash + content_hash
+
+final_hash = "0x" + Digest::SHA256.hexdigest(combined_hash)
+```
+
+#### Appendix: Ruby `BlobUtils`
 
 ```ruby
 module BlobUtils
