@@ -54,6 +54,10 @@ When such an attachment exists, the indexer's API must include the path for retr
 
 The attachment\_url field will be available _in addition_ to the `content_uri` field.
 
+`contentType` Max Length
+
+To enable performant filtering by `contentType`, indexers must only store the first 1,000 characters of the user-submitted content type. Content types of more than 1,000 characters will be truncated, but the attachment will still be valid.
+
 #### Creating an Ethscription Attachment in Javascript
 
 You can use the `cbor` package and Viem's `toBlobs`:
