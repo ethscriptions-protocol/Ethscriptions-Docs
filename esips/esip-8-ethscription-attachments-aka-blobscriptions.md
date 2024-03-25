@@ -43,7 +43,7 @@ If an ethscription's creation transaction does include blobs _and_ the ethscript
 If the concatenated data is a valid CBOR object, and that object decodes into a hash with exactly those two fields, an attachment for the ethscription is created. Note:
 
 * There is no uniqueness requirement for the attachment's content and/or contentType.
-* Attachment content, contentType, and the container CBOR object itself can each be optionally gzipped.
+* Attachment `content`, `contentType`, and the container CBOR object itself can each be optionally gzipped **with a maximum compression ratio of 10x**.
 * The attachment is **not** valid if:
   * If the CBOR object has a tag
   * If the decoded object his not a hash
@@ -54,7 +54,7 @@ When such an attachment exists, the indexer's API must include the path for retr
 
 The attachment\_url field will be available _in addition_ to the `content_uri` field.
 
-`contentType` Max Length
+#### `contentType` Max Length
 
 To enable performant filtering by `contentType`, indexers must only store the first 1,000 characters of the user-submitted content type. Content types of more than 1,000 characters will be truncated, but the attachment will still be valid.
 
