@@ -215,9 +215,9 @@ end
 
 It's useful to be able to generate a unique hash of an Ethscription Attachment in order for indexers to avoid storing duplicate data and for users to determine which other ethscriptions have the same attachment. This can be done in many ways, but to promote uniformity ESIP-8 defines this canonical method of hashing Ethscription Attachments:
 
-1. Compute the sha256 hash of the attachment's `contentType` and `content` fields.
+1. Compute the sha256 hash of the attachment's _ungzipped_ `contentType` and `content` fields.
 2. Remove the leading `0x` if present.
-3. Concatenate the hex string representations of the hashes with `contentType` first.
+3. Concatenate the hex string representations of the hashes with the `contentType` hash first.
 4. Hash this concatenated string and add a `0x` prefix.
 
 Here is a Javascript implementation:
