@@ -94,6 +94,12 @@ Because the Beacon API only provides blob information on a block level, it requi
 Here's an example implementation (it's `O(n^2)` but the numbers involved are small)
 
 ```ruby
+def transaction_blobs
+  blob_versioned_hashes.map do |version_hash|
+    blob_from_version_hash(version_hash)
+  end
+end
+
 def blob_from_version_hash(version_hash)
   block_blob_sidecars.find do |blob|
     kzg_commitment = blob["kzg_commitment"].sub(/\A0x/, '')
@@ -102,12 +108,6 @@ def blob_from_version_hash(version_hash)
     modified_hash = "0x01" + sha256_hash[2..-1]
     
     version_hash == modified_hash
-  end
-end
-
-def transaction_blobs
-  blob_versioned_hashes.map do |version_hash|
-    blob_from_version_hash(version_hash)
   end
 end
 ```
