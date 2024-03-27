@@ -34,6 +34,10 @@ DataURIs can be gzipped per ESIP-7 starting in block `19376500`. [Read more](htt
 
 See details in [ESIP-3](https://docs.ethscriptions.com/esips/accepted-esips/esip-3-smart-contract-ethscription-creations). The start block for ESIP-3 is `18130000`.
 
+#### Ethscription Attachments
+
+Per [ESIP-8](https://docs.ethscriptions.com/esips/esip-8-ethscription-attachments-aka-blobscriptions), starting in block `19526000` you can add attachments to an ethscription using EIP-4844 blobs.
+
 ### Transferring Ethscriptions
 
 #### The Basics
