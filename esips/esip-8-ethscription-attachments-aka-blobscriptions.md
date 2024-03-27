@@ -79,7 +79,7 @@ const cborData = cbor.encode(dataObject);
 const blobs = toBlobs({ data: cborData });
 ```
 
-**Getting Blob Data**
+#### **Getting Blob Data**
 
 Blob data is available on a block-level through the `blob_sidecars` API endpoint available on Ethereum Beacon nodes. If you don't want to run a node yourself, [you can use Quicknode](https://www.quicknode.com/docs/ethereum/eth-v1-beacon-blob\_sidecars-id).
 
@@ -87,7 +87,7 @@ The input to this function is a "block id," which is a slot number (not block nu
 
 This means that attachments must be populated on a one block delay.
 
-**Associating Blobs with Ethereum Transactions**
+#### **Associating Blobs with Ethereum Transactions**
 
 Because the Beacon API only provides blob information on a block level, it requires some additional logic to match blobs to the transactions that created them. Fortunately, transactions now have a `blobVersionedHashes` field that can be computed from the `kzg_commitments` field on the block-level blob data.
 
@@ -271,6 +271,7 @@ module BlobUtils
   # Error Classes
   class BlobSizeTooLargeError < StandardError; end
   class EmptyBlobError < StandardError; end
+  class IncorrectBlobEncoding < StandardError; end
 
   # Adapted from Viem
   def self.to_blobs(data:)
@@ -337,7 +338,7 @@ module BlobUtils
       
       non_empty_sections = non_empty_sections.map do |section|
         unless section.start_with?('00')
-          raise InvalidInputError, "Expected the first byte to be zero"
+          raise IncorrectBlobEncoding, "Expected the first byte to be zero"
         end
         
         section.delete_prefix("00")
