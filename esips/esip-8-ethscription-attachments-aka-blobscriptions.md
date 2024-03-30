@@ -33,14 +33,18 @@ Consider the ethscription created by [this Sepolia transaction](https://sepolia.
 
 ### Specification <a href="#specification" id="specification"></a>
 
-All new ethscriptions have an optional `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.&#x20;
+All new ethscriptions have an optional `attachment` field. If an ethscription is created in a transaction with no blobs this field will be `null`.
 
 If an ethscription's creation transaction does include blobs _and_ the ethscription was created via calldata (i.e., not via an event emission), its blobs are concatenated and interpreted as an untagged [CBOR](https://cbor.io/) object (as defined by [RFC 8949](https://datatracker.ietf.org/doc/html/rfc8949)) that decodes into a hash with _exactly_ these keys:
 
 * `content`
 * `contentType`
 
-If the concatenated data is a valid CBOR object, and that object decodes into a hash with exactly those two fields, an attachment for the ethscription is created. Note:
+If the concatenated data is a valid CBOR object, and that object decodes into a hash with exactly those two fields, an attachment for the ethscription is created.
+
+The case in which the blobs are invalid and an attachment is _not_ created is handled identically to the case in which there are no blobs at all. I.e., the ethscription is still created if it's otherwise valid, just with no attachment.
+
+Note:
 
 * There is no uniqueness requirement for the attachment's content and/or contentType.
 * Attachment `content`, `contentType`, and the container CBOR object itself can each be optionally gzipped **with a maximum compression ratio of 10x**.
