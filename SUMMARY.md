@@ -23,8 +23,6 @@
 ## ⚙️ API Docs
 
 * [API Overview](api-docs/api-overview.md)
-* [Ethscriptions Endpoints](api-docs/ethscriptions-endpoints.md)
-* [Indexer Status Endpoints](api-docs/indexer-status-endpoints.md)
 
 ## 😍 Community Projects
 

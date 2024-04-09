@@ -17,7 +17,7 @@ Today, Ethscriptions primarily function as cheaper NFTs and cheaper tokens. For 
 ### Links
 
 * [Ethscriptions Protocol GitHub](https://github.com/ethscriptions-protocol/)
-* [Ethscriptions.com](api-docs/ethscriptions-endpoints.md)
+* [Ethscriptions.com](broken-reference)
 
 ### What is Calldata?
 
