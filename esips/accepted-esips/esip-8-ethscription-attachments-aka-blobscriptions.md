@@ -25,11 +25,7 @@ Consider the ethscription created by [this Sepolia transaction](https://sepolia.
 
 [The transaction's blobs](https://sepolia.etherscan.io/tx/0x5d04d632d3affef95b0ae141f2b5b5af474ab80a24925672bdd551637990054b#blobs), when interpreted according to the rules described below, contains the data for this image which becomes the ethscription's attachment:
 
-<div align="center">
-
-<figure><img src="../.gitbook/assets/starroom.gif" alt="" width="375"><figcaption></figcaption></figure>
-
-</div>
+<div align="center"><figure><img src="../../.gitbook/assets/starroom.gif" alt="" width="375"><figcaption></figcaption></figure></div>
 
 ### Specification <a href="#specification" id="specification"></a>
 
@@ -85,7 +81,7 @@ const blobs = toBlobs({ data: cborData });
 
 #### **Getting Blob Data**
 
-Blob data is available on a block-level through the `blob_sidecars` API endpoint available on Ethereum Beacon nodes. If you don't want to run a node yourself, [you can use Quicknode](https://www.quicknode.com/docs/ethereum/eth-v1-beacon-blob\_sidecars-id).
+Blob data is available on a block-level through the `blob_sidecars` API endpoint available on Ethereum Beacon nodes. If you don't want to run a node yourself, [you can use Quicknode](https://www.quicknode.com/docs/ethereum/eth-v1-beacon-blob_sidecars-id).
 
 The input to this function is a "block id," which is a slot number (not block number) or block root. Block roots are available on normal Ethereum API requests, but only for the _previous_ block (the field is `parentBeaconBlockRoot`).
 

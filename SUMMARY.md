@@ -16,9 +16,10 @@
   * [ESIP-5: Bulk Ethscription Transfers from EOAs](esips/esip-5-bulk-ethscription-transfers-from-eoas.md)
   * [ESIP-6: Opt-in Ethscription Non-uniqueness](esips/esip-6-opt-in-ethscription-non-uniqueness.md)
   * [ESIP-7: Support Gzipped Calldata in Ethscription Creation](esips/accepted-esips/esip-7-support-gzipped-calldata-in-ethscription-creation.md)
-* [Draft ESIPs](esips/draft-esips.md)
-* [ESIP-8: Ethscription Attachments aka "BlobScriptions"](esips/esip-8-ethscription-attachments-aka-blobscriptions.md)
-* [DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine](esips/deprecated-esip-4-the-ethscriptions-virtual-machine.md)
+  * [ESIP-8: Ethscription Attachments aka "BlobScriptions"](esips/accepted-esips/esip-8-ethscription-attachments-aka-blobscriptions.md)
+* [Draft ESIPs](esips/draft-esips/README.md)
+  * [ESIP-9 Enable Facet Contracts to Transfer Ethscriptions](esips/draft-esips/esip-9-enable-facet-contracts-to-transfer-ethscriptions.md)
+  * [DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine](esips/draft-esips/deprecated-esip-4-the-ethscriptions-virtual-machine.md)
 
 ## ⚙️ API Docs
 
