@@ -29,7 +29,7 @@ Every ethscription now stores:
    * Transfers must always originate from the current owner (as today).
    * **EOAs** can transfer from either L1 or L2. If successful, `owned_on_network` is set to the network where the transfer occurred.
    * **Contracts** can only transfer if they are doing so from the same network recorded in `owned_on_network`.
-     * Example: If `current_owner = 0x1234` (a contract) and `owned_on_network = L1`, only an L1 transaction from that contract can transfer it.
+     * Example: If `current_owner = 0x1234` and `owned_on_network = L1`, then if a transfer is initiated via an event then it must be emitted by `0x1234` and on the L1 network.
 3. **Successful Transfer**
    1. Update `current_owner` to the recipient.
    2. Update `owned_on_network` to the network that processed the transfer.
