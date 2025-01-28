@@ -10,7 +10,7 @@ In other words, if a certain L1 Ethereum transaction would create or transfer an
 
 The purpose of this addition is to enable cheaper ethscriptions-smart contract interactions as using L1 contracts for this is expensive. This has a few applications:
 
-* **Ethscriptions marketplaces.** This ESIP should make marketplace transactions 2x–50x cheaper, with the greatest savings being in purchasing multiple ethscriptions in a single transaction.
+* **Ethscriptions marketplaces.** This ESIP should make marketplace transactions 5x–50x cheaper, with the greatest savings being in purchasing multiple ethscriptions in a single transaction.
 * **Ethscriptions-NFT wrappers**. Wrapping an ethscription into an NFT unlocks functionality such a non-escrow based marketplaces. However wrapping with L1 smart contracts (and then selling on L1 NFT marketplaces) is prohibitively expensive.
 
 ### Specification
