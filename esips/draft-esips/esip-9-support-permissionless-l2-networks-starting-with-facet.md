@@ -45,7 +45,7 @@ Here is a flowchart of the block processing logic:
 #### Key Benefits
 
 * **Reduced Marketplace Costs**: Marketplace transactions can be 5x–50x cheaper when performed on Facet, especially when buying multiple ethscriptions in one transaction.
-* **Practical NFT Wrapping**: Ethscriptions remain Ethscriptions on both networks—they do not become ERC-721 NFTs just by existing on Facet. However, they can be wrapped in an NFT contract if desired, unlocking more complex features without the high gas costs of L1 interactions.
+* **Practical NFT Wrapping**: Ethscriptions can be wrapped into NFTs by depositing them into purpose-built smart contracts, enabling integration with non-custodial marketplaces and existing NFT infrastructure. While this wrapping mechanism exists today, implementing it on L1 is prohibitively expensive. By allowing Facet contracts to serve as wrappers, this ESIP makes the process economically viable.
 
 #### Security and Trust
 
