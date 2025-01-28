@@ -1,4 +1,4 @@
-# ESIP-9 Support the Facet Network
+# ESIP-9 Support Permissionless L2 Networks, Starting With Facet
 
 ### Abstract
 
@@ -56,3 +56,5 @@ Here is a flowchart of the block processing logic:
 
 * Further L2 support can be added later (using similar logic) if additional networks without privileged roles emerge.
 * `owned_on_network` can be extended or replaced by more granular identifiers if needed.
+
+Ethscriptions thus gain a clear path to cheaper, more flexible interactions while retaining the single, canonical view of their history and ownership.
