@@ -2,59 +2,57 @@
 
 ### Abstract
 
-The Ethscriptions Protocol relies on an ordered sequence of ethscriptions creations and transfers to determine which ethscriptions exist and who owns them.
-
-Currently this ordered sequence is derived from Ethereum L1 transaction history. This ESIP proposes adding Facet transaction history as a source for ethscription creations and transfers.
-
-In other words, if a certain L1 Ethereum transaction would create or transfer and ethscription, then the equivalent Facet transaction will do the same.
-
-The purpose of this addition is to enable cheaper ethscriptions-smart contract interactions as using L1 contracts for this is expensive. This has a few applications:
-
-* **Ethscriptions marketplaces.** This ESIP should make marketplace transactions 5x–50x cheaper, with the greatest savings being in purchasing multiple ethscriptions in a single transaction.
-* **Ethscriptions-NFT wrappers**. Wrapping an ethscription into an NFT unlocks functionality such a non-escrow based marketplaces. However wrapping with L1 smart contracts (and then selling on L1 NFT marketplaces) is prohibitively expensive.
+Ethscriptions determine existence and ownership via an ordered sequence of creations and transfers. Currently, that sequence is based only on Ethereum L1 transaction history. This ESIP extends that sequence to include Facet (L2) transactions, so that if an L1 transaction would create or transfer an ethscription, the corresponding Facet transaction can do the same. The main goal is to reduce gas costs for ethscriptions-smart contract interactions (marketplaces, wrappers, etc.) that would otherwise be prohibitively expensive on L1.
 
 ### Specification
 
-Every Facet block is associated with a single L1 block via the L1Block.sol contract. To integrate Facet transactions, an indexer must:
+#### Transaction Processing
 
-1. Process a given L1 Block, just as it does today. Say the number is #1234.
-2. Then, find all Facet blocks corresponding to L1 block #1234 and process them in order of their Facet block number just as if they were L1 blocks, with the exception of contract address aliasing.
+1. Every Facet block is linked to one Ethereum L1 block
+2. Indexers process both:
+   * First, process the L1 block (#1234)
+   * Then, process all Facet blocks linked to that L1 block.
+     * Currently there will be one such Facet block per L1 block
+     * This requires Ethscriptions indexers to have access to a Facet RPC endpoint
 
-#### Facet Contract Address Aliasing
+#### New Field: `owned_on_network`
 
-EOA addresses can be treated normally in transactions initiated in Facet because the same person / private key controls the address on both Facet and the L1.
+Every ethscription now stores:
 
-Contract addresses work differently, however. This is because contracts on Facet and the L1 can share addresses but can contain different code and have different owners. Therefore, a request to transfer an ethscription from `address(0x1234)` initiated on the L1 does not necessarily mean the same thing as the request to transfer an ethscription from the same `address(0x1234)` on Facet.
+* `current_owner`: The address (EOA or contract) that currently owns it.
+* `owned_on_network`: Either `L1` or `L2`, depending on which network last updated ownership.
 
-To eliminate this ambiguity, Facet contract addresses will be transformed so that, in the eyes of the Ethscriptions Protocol, no Facet contract will share an address with an L1 contract.
+#### Rules for Updating `owned_on_network`
 
-This is the transformation (it is borrowed from the OP Stack):
+1. **Creation**: When an ethscription is created (on L1 or L2), set `owned_on_network` to the network where it was minted.
+2. **Transfer Attempt**:
+   * Transfers must always originate from the current owner (as today).
+   * **EOAs** can transfer from either L1 or L2. If successful, `owned_on_network` is set to the network where the transfer occurred.
+   * **Contracts** can only transfer if they are doing so from the same network recorded in `owned_on_network`.
+     * Example: If `current_owner = 0x1234` (a contract) and `owned_on_network = L1`, only an L1 transaction from that contract can transfer it.
+3. **Successful Transfer**
+   1. Update `current_owner` to the recipient.
+   2. Update `owned_on_network` to the network that processed the transfer.
 
-```solidity
-uint160 constant offset = uint160(0x1111000000000000000000000000000000001111);
+Marketplaces, wallets, and explorers can display the owned\_on\_network data in any way they choose.
 
-function convertL2addresstoL1(address l2Address) internal pure returns (address l1Address) {
-    unchecked {
-        l1Address = address(uint160(l2Address) - offset);
-    }
-}
-```
+Here is a flowchart of the block processing logic:
 
-Example:
+<figure><img src="../../.gitbook/assets/Zight 2025-01-28 at 3.01.53 PM (1).png" alt=""><figcaption><p>Block processing flowchart</p></figcaption></figure>
 
-* Facet contract address: `0x0000000000000000000000000000000000001234`
-* Transformed address: `0xeEef000000000000000000000000000000000123`
+### Rationale
 
-If an ethscriptions indexer sees an event emitted by the Facet contract with address `0x0000000000000000000000000000000000001234` it should "pretend" that the event was actually emitted by address `0xeEef000000000000000000000000000000000123`.
+#### Key Benefits
 
-Users must take care to not send assets to un-converted Facet contract addresses as they will be lost.
+* **Reduced Marketplace Costs**: Marketplace transactions can be 5x–50x cheaper when performed on Facet, especially when buying multiple ethscriptions in one transaction.
+* **Practical NFT Wrapping**: Ethscriptions remain Ethscriptions on both networks—they do not become ERC-721 NFTs just by existing on Facet. However, they can be wrapped in an NFT contract if desired, unlocking more complex features without the high gas costs of L1 interactions.
 
-#### FAQ
+#### Security and Trust
 
-Does this make Facet a dependency for Ethscriptions? Yes, after this ESIP all ethscriptions indexers will  need access to both an L1 RPC and a Facet RPC. They can also run a Facet node, which is permissionless.
+* **Immutable L2**: Facet is permissionless, has no privileged roles, and cannot be shut down, preserving Ethscriptions’ trustlessness.
+* **Consistent State**: Indexers maintain a single source of truth by processing L1 blocks, then Facet blocks, preserving a definitive transaction order.
 
-Can this compromise the security of Ethscriptions? No, because Facet is permissionless, owned by no one, and cannot be turned off.
+#### Future Extensions
 
-Why was Facet chosen over any other L2? Facet is the only Ethereum rollup that cannot be shut down and has no privileged roles.
-
-Will ethscriptions be NFTs in the Facet protocol? No, they will be ethscriptions! It will work just like it does on the L1. However they can be wrapped into NFTs.
+* Further L2 support can be added later (using similar logic) if additional networks without privileged roles emerge.
+* `owned_on_network` can be extended or replaced by more granular identifiers if needed.
