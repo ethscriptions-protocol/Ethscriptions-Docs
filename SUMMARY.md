@@ -18,7 +18,7 @@
   * [ESIP-7: Support Gzipped Calldata in Ethscription Creation](esips/accepted-esips/esip-7-support-gzipped-calldata-in-ethscription-creation.md)
   * [ESIP-8: Ethscription Attachments aka "BlobScriptions"](esips/accepted-esips/esip-8-ethscription-attachments-aka-blobscriptions.md)
 * [Draft ESIPs](esips/draft-esips/README.md)
-  * [ESIP-9 Support the Facet Network](esips/draft-esips/esip-9-support-the-facet-network.md)
+  * [ESIP-9 Support Permissionless L2 Networks, Starting With Facet](esips/draft-esips/esip-9-support-permissionless-l2-networks-starting-with-facet.md)
   * [DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine](esips/draft-esips/deprecated-esip-4-the-ethscriptions-virtual-machine.md)
 
 ## ⚙️ API Docs
