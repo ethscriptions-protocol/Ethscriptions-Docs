@@ -2,9 +2,9 @@
 
 ## Abstract
 
-This ESIP transforms ethscriptions into a novel cross-chain asset—one that exists "above" individual networks and can be manipulated from any qualified L2 without bridging.
+This ESIP transforms ethscriptions into a novel cross-chain asset—one that exists "above" individual networks and can be manipulated from any qualified L2 without the need for bridging.
 
-Ethscriptions rely on an ordered sequence of creations and transfers to determine existence and ownership—currently derived from Ethereum L1 alone. This ESIP generalizes Ethscriptions to include **any** qualifying L2 network, provided it is permissionless, unstoppable, and uses Ethereum for data availability. By allowing ethscriptions to be created and transferred on L2, users gain access to far cheaper smart-contract interactions (e.g. marketplaces, NFT wrapping) compared to L1. Facet is the first supported L2, as it meets these requirements and provides a direct, trustless link to Ethereum blocks.
+Until now, Ethscriptions have relied on a strictly ordered sequence of creations and transfers derived solely from Ethereum L1. Under this proposal, any L2 meeting certain trust-minimized criteria can create and transfer Ethscriptions, giving users access to far cheaper smart-contract interactions (marketplaces, NFT wrappers, etc.). The indexers still maintain a single, canonical timeline of ownership spanning both L1 and L2. Facet is the first L2 to be admitted because it satisfies all of the requirements below, but these requirements are general enough to allow additional L2 integrations in the future.
 
 ## Specification
 
@@ -13,17 +13,25 @@ Ethscriptions rely on an ordered sequence of creations and transfers to determin
 An L2 can be admitted under this ESIP if it satisfies all of the following:
 
 1. **Ethereum Rollup**
-   * Must use Ethereum for data availability
+   1. The L2 must use Ethereum for data availability. Otherwise, it would be impossible to reconstruct Ethscription state solely from Ethereum L1 data.
 2. **Based Sequencing**
-   * Each L2 block is deterministically associated with an L1 block
-   * All L2 blocks referencing L1 block N must be discoverable when processing block N
-   * Multiple L2 blocks per L1 block are allowed with clear ordering
-   * Each L2 block must reference L1 block hash for reorg detection
-3. **Permissionless and Unstoppable**
-   * No privileged roles or admin keys
-   * No ability to pause, shut down, or censor transactions
-4. **Standard RPC Interface**
-   * Must provide reliable transaction and block data access
+   1. Each L2 block must be **deterministically associated** with a corresponding Ethereum L1 block (via block number and hash).
+   2. All L2 blocks referencing L1 block _N_ must be discoverable by the time the indexer processes L1 block _N_.
+   3. Multiple L2 blocks per L1 block are allowed, as long as they have a clear final ordering.
+   4. This ensures a **unified Ethscriptions state** across all networks—actions on the L2 are recognized globally once the corresponding L1 block is processed.
+   5. **Why Based Sequencing?**
+      1. It prevents a privileged sequencer from indefinitely delaying or reordering L2 transactions, preserving a fair ordering for **all** users.
+      2. It guarantees that a user’s L2 transaction (e.g., a marketplace purchase) is recognized by the Ethscriptions Protocol as soon as it is confirmed on the L2.
+3. **L2 Transaction** **Identities**
+   1. Ethscription IDs today are derived from Ethereum L1 transaction hashes.
+   2. For an L2 transaction to _create_ an ethscription, there must be a reliable way to map it back to the originating L1 transaction.
+   3. If an L2 cannot provide this, it may support only **transfers**, not new creations.
+4. **Permissionless and Unstoppable**
+   1. The L2 must have no privileged roles or administrative controls that can pause, shut down, or censor transactions.
+   2. This prevents any single party from exerting disproportionate power over the protocol’s operation.
+5. **Open Source Node**
+   1. The L2 must have an open source node that ethscriptions indexers can run to derive the L2 state
+   2. This ensures indexers are not forced to rely on an external centralized service for block data.
 
 ### Integration Data
 
@@ -31,7 +39,7 @@ Each L2 must provide:
 
 | Field              | Description                        | Example    |
 | ------------------ | ---------------------------------- | ---------- |
-| name               | Lowercase ASCII, no spaces, unique | `"facet"`  |
+| name               | Lowercase ASCII, no spaces, unique | `facet`    |
 | mainnet\_chain\_id | L2's mainnet chain identifier      | `84532`    |
 | testnet\_chain\_id | L2's testnet chain identifier      | `84531`    |
 | l1\_start\_block   | L1 block where integration begins  | `19000000` |
@@ -79,13 +87,18 @@ Marketplaces, wallets, and explorers may display `owned_on_network` at their dis
 
 ### A New Kind of Cross-Chain Asset
 
-This ESIP makes ethscriptions interoperable across multiple networks, with no explicit “bridge” required. Users choose where to transact (L1 or a qualifying L2), and the Ethscriptions indexer logic ensures a single, canonical timeline of ownership.
+This ESIP makes ethscriptions interoperable across multiple networks, with no explicit bridge required. Users choose where to transact (L1 or a qualifying L2), and the Ethscriptions indexer logic ensures a single, canonical timeline of ownership.
 
 ### Facet as the First Implementation
 
-Facet will be the first L2 network added under this ESIP because it is the only L2 that meets the above criteria for admission.
+Facet is the **initial L2** integrated under this ESIP because:
 
-Ethscriptions indexers that adopt this ESIP must add a Facet RPC endpoint alongside their existing L1 RPC. This allows them to retrieve both L1 and Facet blocks and apply the ownership update rules described above.
+* It uses **Ethereum L1** for data availability.
+* Implements **based sequencing** by tying each L2 block to a specific Ethereum L1 block.
+* Lacks **privileged roles** or kill switches.
+* Has an [open source node](https://github.com/0xFacet/facet-node).
+
+Indexers must add a Facet RPC endpoint and interleave Facet transactions with L1 transactions according to the rules above.
 
 ## Rationale
 
@@ -102,8 +115,8 @@ Ethscriptions remain their own asset format on L2, but can be wrapped cheaply in
 * **Permissionless Rollups**\
   Only L2s without privileged roles qualify, preserving Ethscriptions’ trustless nature.
 * **Single Source of Truth**\
-  By processing L1 blocks first, then L2 blocks, each indexer arrives at the same final ownership state.
+  Merging L1 and L2 histories ensures one canonical record of ethscription creation and transfer.
 
 ### Conclusion
 
-With this ESIP, Ethscriptions gain a “cross-chain” dimension while retaining a unified, canonical view of creations and transfers, starting with Facet. This paves the way for future L2 integrations that adhere to the same trust-minimized requirements.
+By adopting this ESIP, Ethscriptions become a **cross-chain** protocol, retaining a single, unified view of asset ownership while allowing users to transact on whichever trust-minimized L2(s) they prefer. **Facet** serves as a proof of concept for how L2 integration delivers cheaper, more flexible ethscription operations, setting the stage for additional L2s that meet these robust requirements.
