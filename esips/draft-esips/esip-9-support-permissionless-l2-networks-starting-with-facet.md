@@ -6,6 +6,8 @@ This ESIP transforms ethscriptions into a novel cross-chain asset—one that exi
 
 Until now, Ethscriptions have relied on a strictly ordered sequence of creations and transfers derived solely from Ethereum L1. Under this proposal, any L2 meeting certain trust-minimized criteria can create and transfer Ethscriptions, giving users access to far cheaper smart-contract interactions (marketplaces, NFT wrappers, etc.). The indexers still maintain a single, canonical timeline of ownership spanning both L1 and L2. Facet is the first L2 to be admitted because it satisfies all of the requirements below, but these requirements are general enough to allow additional L2 integrations in the future.
 
+[Discuss this draft ESIP here](https://github.com/ethscriptions-protocol/ESIP-Discussion/issues/24).
+
 ## Specification
 
 ### L2 Integration Criteria
