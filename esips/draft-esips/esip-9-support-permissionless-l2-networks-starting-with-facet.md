@@ -1,4 +1,4 @@
-# ESIP-XX Extending Ethscriptions to L2 Networks
+# ESIP-XX: Extending Ethscriptions to L2 Networks
 
 ## Abstract
 
@@ -12,7 +12,7 @@ Until now, Ethscriptions have relied on a strictly ordered sequence of creations
 
 ### L2 Integration Criteria
 
-An L2 can be admitted under this ESIP if it satisfies all of the following:
+To preserve Ethscriptions’ trustless ethos, L2s must meet these criteria:
 
 1. **Ethereum Rollup**
    1. The L2 must use Ethereum for data availability. Otherwise, it would be impossible to reconstruct Ethscription state solely from Ethereum L1 data.
@@ -24,16 +24,10 @@ An L2 can be admitted under this ESIP if it satisfies all of the following:
    5. **Why Based Sequencing?**
       1. It prevents a privileged sequencer from indefinitely delaying or reordering L2 transactions, preserving a fair ordering for **all** users.
       2. It guarantees that a user’s L2 transaction (e.g., a marketplace purchase) is recognized by the Ethscriptions Protocol as soon as it is confirmed on the L2.
-3. **L2 Transaction** **Identities**
-   1. Ethscription IDs today are derived from Ethereum L1 transaction hashes.
-   2. For an L2 transaction to _create_ an ethscription, there must be a reliable way to map it back to the originating L1 transaction.
-   3. If an L2 cannot provide this, it may support only **transfers**, not new creations.
-4. **Permissionless and Unstoppable**
+3. **Permissionless and Unstoppable**
    1. The L2 must have no privileged roles or administrative controls that can pause, shut down, or censor transactions.
    2. This prevents any single party from exerting disproportionate power over the protocol’s operation.
-5. **Open Source Node**
-   1. The L2 must have an open source node that ethscriptions indexers can run to derive the L2 state
-   2. This ensures indexers are not forced to rely on an external centralized service for block data.
+4. **Open Source Node**
 
 ### Integration Data
 
