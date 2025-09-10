@@ -1,3 +1,7 @@
+---
+hidden: true
+---
+
 # ESIP-XX: Extending Ethscriptions to L2 Networks
 
 ## Abstract

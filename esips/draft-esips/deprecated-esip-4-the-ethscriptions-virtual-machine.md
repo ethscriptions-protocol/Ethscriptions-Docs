@@ -1,5 +1,6 @@
 ---
 description: 'Dumb Contracts: "So dumb, they''re smart"'
+hidden: true
 ---
 
 # DEPRECATED: ESIP-4: The Ethscriptions Virtual Machine
